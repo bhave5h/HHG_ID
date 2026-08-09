@@ -7,10 +7,16 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const photoFile = formData.get("photo") as File | null;
-    const name = (formData.get("name") as string) || "Anonymous Builder";
-    const stack = (formData.get("stack") as string) || "AI × Design × Dev";
+    const name = (formData.get("name") as string) || "SAMIRA HADID";
+    const stack = (formData.get("stack") as string) || "Creative Director";
     const builderTitle =
       (formData.get("builderTitle") as string) || "THE PIXEL ARCHITECT";
+    const passNo = (formData.get("passNo") as string) || "57236";
+    const selectedFrame =
+      (formData.get("selectedFrame") as string) || "frame1.png";
+    const zoom = parseFloat((formData.get("zoom") as string) || "1.0");
+    const offsetX = parseFloat((formData.get("offsetX") as string) || "0");
+    const offsetY = parseFloat((formData.get("offsetY") as string) || "0");
 
     if (!photoFile) {
       return NextResponse.json(
@@ -31,12 +37,17 @@ export async function POST(req: NextRequest) {
     const photoArrayBuffer = await photoFile.arrayBuffer();
     const userPhotoBuffer = Buffer.from(photoArrayBuffer);
 
-    // 1. Generate 1200x1500 PNG with Sharp
+    // 1. Generate 1200x1800 PNG with Sharp (2:3 Aspect Ratio)
     const cardPngBuffer = await generateCardImage({
       userPhotoBuffer,
       name,
       stack,
       builderTitle,
+      passNo,
+      selectedFrame,
+      zoom,
+      offsetX,
+      offsetY,
     });
 
     // 2. Generate unique Card ID

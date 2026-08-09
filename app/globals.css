@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Imbue:opsz,wght@10..100,100..900&family=Victor+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -18,8 +19,8 @@
   --color-hhg-pink: var(--hhg-pink);
   --color-hhg-black: var(--hhg-black);
   --color-hhg-cream: var(--hhg-cream);
-  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
+  --font-imbue: 'Imbue', serif;
+  --font-victor: 'Victor Mono', monospace;
 }
 
 body {
@@ -27,144 +28,139 @@ body {
   background-image: radial-gradient(rgba(0, 0, 0, 0.15) 1px, transparent 1px);
   background-size: 20px 20px;
   color: var(--hhg-black);
-  font-family: var(--font-sans);
+  font-family: 'Victor Mono', monospace;
   min-height: 100vh;
   margin: 0;
   padding: 0;
 }
 
-/* Neo-Brutalism Design Utilities */
+/* Typography Classes */
+.font-heading {
+  font-family: 'Imbue', serif;
+}
+
+.font-body {
+  font-family: 'Victor Mono', monospace;
+}
+
+/* Simplified CSS Component Classes using Tailwind @apply */
 .neo-card {
-  background-color: #ffffff;
-  border: 3px solid #000000;
-  box-shadow: 5px 5px 0px 0px #000000;
-  border-radius: 0px;
+  @apply bg-white border-3 border-black shadow-[5px_5px_0px_0px_#000000] rounded-none;
 }
 
 .neo-card-yellow {
-  background-color: var(--hhg-yellow);
-  border: 3px solid #000000;
-  box-shadow: 5px 5px 0px 0px #000000;
-  color: #000000;
-  border-radius: 0px;
+  @apply bg-[#fee101] text-black border-3 border-black shadow-[5px_5px_0px_0px_#000000] rounded-none;
 }
 
 .neo-card-pink {
-  background-color: var(--hhg-pink);
-  border: 3px solid #000000;
-  box-shadow: 5px 5px 0px 0px #000000;
-  color: #ffffff;
-  border-radius: 0px;
+  @apply bg-[#ff0080] text-white border-3 border-black shadow-[5px_5px_0px_0px_#000000] rounded-none;
 }
+
+.hhg-container-radar {
+  @apply bg-[#FFFCEB] border-2 border-[#0B6839]/30 rounded-[28px] shadow-[8px_8px_0px_0px_#053B1F] p-6 sm:p-10;
+}
+
+.neo-pill-pink {
+  @apply bg-[#FF0080] text-white font-['Imbue'] font-black tracking-wider uppercase text-base sm:text-lg px-6 py-2.5 rounded-full border-2 border-black shadow-[3px_3px_0px_0px_#000000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000000] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer inline-flex items-center justify-center;
+}
+
+.neo-pill-outline {
+  @apply bg-transparent text-[#FF0080] font-['Imbue'] font-black tracking-wider uppercase text-base sm:text-lg px-6 py-2.5 rounded-full border-2 border-[#FF0080] hover:bg-[#FF0080]/10 transition-all cursor-pointer inline-flex items-center justify-center;
+}
+
 
 .neo-btn {
-  background-color: var(--hhg-yellow);
-  color: #000000;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 3px solid #000000;
-  box-shadow: 4px 4px 0px 0px #000000;
-  transition: all 0.15s ease-in-out;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.neo-btn:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #000000;
-}
-
-.neo-btn:active {
-  transform: translate(1px, 1px);
-  box-shadow: 2px 2px 0px 0px #000000;
+  @apply bg-[#fee101] text-black font-extrabold uppercase tracking-wider border-3 border-black shadow-[4px_4px_0px_0px_#000000] transition-all cursor-pointer inline-flex items-center justify-center hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000000] active:translate-x-0.25 active:translate-y-0.25 active:shadow-[2px_2px_0px_0px_#000000];
+  font-family: 'Victor Mono', monospace;
 }
 
 .neo-btn-pink {
-  background-color: var(--hhg-pink);
-  color: #ffffff;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 3px solid #000000;
-  box-shadow: 4px 4px 0px 0px #000000;
-  transition: all 0.15s ease-in-out;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.neo-btn-pink:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #000000;
-}
-
-.neo-btn-pink:active {
-  transform: translate(1px, 1px);
-  box-shadow: 2px 2px 0px 0px #000000;
+  @apply bg-[#ff0080] text-white font-extrabold uppercase tracking-wider border-3 border-black shadow-[4px_4px_0px_0px_#000000] transition-all cursor-pointer inline-flex items-center justify-center hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000000] active:translate-x-0.25 active:translate-y-0.25 active:shadow-[2px_2px_0px_0px_#000000];
+  font-family: 'Victor Mono', monospace;
 }
 
 .neo-btn-black {
-  background-color: #000000;
-  color: #ffffff;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 3px solid #000000;
-  box-shadow: 4px 4px 0px 0px var(--hhg-yellow);
-  transition: all 0.15s ease-in-out;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.neo-btn-black:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px var(--hhg-yellow);
+  @apply bg-black text-white font-extrabold uppercase tracking-wider border-3 border-black shadow-[4px_4px_0px_0px_#fee101] transition-all cursor-pointer inline-flex items-center justify-center hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#fee101];
+  font-family: 'Victor Mono', monospace;
 }
 
 .neo-input {
-  width: 100%;
-  background-color: #ffffff;
-  border: 3px solid #000000;
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-  color: #000000;
-  box-shadow: 3px 3px 0px 0px #000000;
-  border-radius: 0px;
-}
-
-.neo-input:focus {
-  outline: none;
-  background-color: #fffbe8;
-  box-shadow: 4px 4px 0px 0px var(--hhg-pink);
+  @apply w-full bg-white border-3 border-black p-3 font-bold text-black shadow-[3px_3px_0px_0px_#000000] rounded-none focus:outline-none focus:bg-[#fffbe8] focus:shadow-[4px_4px_0px_0px_#ff0080];
+  font-family: 'Victor Mono', monospace;
 }
 
 .neo-badge-yellow {
-  background-color: var(--hhg-yellow);
-  color: #000000;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.6rem;
-  border: 2px solid #000000;
-  box-shadow: 2px 2px 0px 0px #000000;
+  @apply bg-[#fee101] text-black font-black uppercase tracking-widest text-xs px-2.5 py-1 border-2 border-black shadow-[2px_2px_0px_0px_#000000];
+  font-family: 'Victor Mono', monospace;
 }
 
 .neo-badge-pink {
-  background-color: var(--hhg-pink);
-  color: #ffffff;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.6rem;
-  border: 2px solid #000000;
-  box-shadow: 2px 2px 0px 0px #000000;
+  @apply bg-[#ff0080] text-white font-black uppercase tracking-widest text-xs px-2.5 py-1 border-2 border-black shadow-[2px_2px_0px_0px_#000000];
+  font-family: 'Victor Mono', monospace;
 }
+
+/* User's 3D Pressable Button Component Style */
+.btn-3d-wrapper {
+  display: inline-block;
+  width: 100%;
+}
+
+.btn-3d {
+  --button_radius: 0.75em;
+  --button_color: #fee101;
+  --button_outline_color: #000000;
+  font-size: 15px;
+  font-weight: 800;
+  font-family: 'Victor Mono', monospace;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--button_radius);
+  background: var(--button_outline_color);
+  padding: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: 100%;
+}
+
+.btn-3d .button_top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 2.5px solid var(--button_outline_color);
+  border-radius: var(--button_radius);
+  padding: 0.75em 1.5em;
+  background: var(--button_color);
+  color: var(--button_outline_color);
+  transform: translateY(-0.25em);
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.btn-3d:hover .button_top {
+  transform: translateY(-0.38em);
+}
+
+.btn-3d:active .button_top {
+  transform: translateY(0);
+}
+
+.btn-3d-pink {
+  --button_color: #ff0080;
+  --button_outline_color: #000000;
+}
+
+.btn-3d-pink .button_top {
+  color: #ffffff;
+}
+
+.btn-3d-black {
+  --button_color: #000000;
+  --button_outline_color: #fee101;
+}
+
+.btn-3d-black .button_top {
+  color: #fee101;
+}
+
+
 

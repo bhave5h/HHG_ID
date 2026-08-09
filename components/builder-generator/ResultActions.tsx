@@ -1,7 +1,6 @@
-"use client";
-
 import React from "react";
 import { HASHTAG } from "@/lib/constants";
+import Neo3DButton from "@/components/ui/Neo3DButton";
 
 interface ResultActionsProps {
   cardUrl: string;
@@ -29,50 +28,56 @@ export default function ResultActions({
   };
 
   return (
-    <div className="w-full flex flex-col gap-3">
+    <div className="w-full flex flex-col gap-4 font-body">
       <div className="neo-card-yellow p-3 text-center">
         <p className="text-xs font-black uppercase tracking-wider text-black">
           🎉 YOUR HH GOA 2026 BUILDER PASS IS READY!
         </p>
       </div>
 
-      {/* Main CTA Buttons */}
+      {/* Main 3D CTA Buttons */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <a
+        <Neo3DButton
+          asAnchor
           href={cardUrl}
           download={downloadFileName}
-          className="neo-btn flex-1 py-3.5 px-4 text-center font-black text-sm sm:text-base text-black"
+          variant="yellow"
+          className="flex-1"
         >
           📥 DOWNLOAD ID CARD (PNG)
-        </a>
+        </Neo3DButton>
 
-        <a
+        <Neo3DButton
+          asAnchor
           href={xShareUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="neo-btn-pink flex-1 py-3.5 px-4 text-center font-black text-sm sm:text-base text-white"
+          variant="pink"
+          className="flex-1"
         >
           🚀 SHARE ON X ({HASHTAG})
-        </a>
+        </Neo3DButton>
       </div>
 
       {/* Copy Link & Reset Controls */}
-      <div className="flex gap-2">
-        <button
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Neo3DButton
           type="button"
           onClick={handleCopyLink}
-          className="neo-card bg-white hover:bg-zinc-100 flex-1 py-2 text-xs font-bold text-black border-2 border-black"
+          variant="black"
+          className="flex-1"
         >
           🔗 COPY SHARE URL
-        </button>
+        </Neo3DButton>
 
-        <button
+        <Neo3DButton
           type="button"
           onClick={onReset}
-          className="neo-card bg-zinc-200 hover:bg-zinc-300 px-4 py-2 text-xs font-bold text-black border-2 border-black"
+          variant="yellow"
+          className="flex-1"
         >
           ✨ CREATE ANOTHER
-        </button>
+        </Neo3DButton>
       </div>
     </div>
   );

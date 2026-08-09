@@ -6,7 +6,12 @@ export interface CardGenerationOptions {
   userPhotoBuffer: Buffer;
   name: string;
   stack: string;
-  builderTitle: string;
+  builderTitle?: string;
+  passNo?: string;
+  selectedFrame?: string;
+  zoom?: number;
+  offsetX?: number;
+  offsetY?: number;
 }
 
 function escapeXml(unsafe: string): string {
@@ -21,176 +26,166 @@ function escapeXml(unsafe: string): string {
 export async function generateCardImage(
   options: CardGenerationOptions
 ): Promise<Buffer> {
-  const { userPhotoBuffer, name, stack, builderTitle } = options;
+  const {
+    userPhotoBuffer,
+    name,
+    stack,
+    passNo = "57236",
+    selectedFrame = "frame1.png",
+    zoom = 1.0,
+    offsetX = 0,
+    offsetY = 0,
+  } = options;
 
-  // Clean inputs
-  const cleanName = (name.trim() || "ANONYMOUS BUILDER").toUpperCase();
-  const cleanStack = (stack.trim() || "FULLSTACK BUILDER").toUpperCase();
-  const cleanTitle = (builderTitle.trim() || "THE SHIPPERS").toUpperCase();
+  const cleanName = (name.trim() || "SAMIRA HADID").toUpperCase();
+  const cleanStack = stack.trim() || "Creative Director";
+  const cleanPassNo = (passNo.trim() || "57236").toUpperCase();
 
-  // Final Card Dimensions (matching public/ui/card.png)
+  // Final Card Dimensions (2:3 Aspect Ratio)
   const CARD_WIDTH = 1200;
-  const CARD_HEIGHT = 1500;
+  const CARD_HEIGHT = 1800;
 
-  // Photo Box Dimensions
-  const PHOTO_WIDTH = 960;
-  const PHOTO_HEIGHT = 620;
-  const PHOTO_X = 120;
+  // Photo Frame Dimensions — 1:1 Square
+  const PHOTO_WIDTH = 1020;
+  const PHOTO_HEIGHT = 1020;
+  const PHOTO_X = 90;
   const PHOTO_Y = 320;
 
-  // 1. Process User Photo: Auto-rotate EXIF, crop to fill Photo Box, resize
+  // 1. Process User Photo with Cover Fit, Zoom, and Pan
   let processedPhotoBuffer: Buffer;
   try {
-    processedPhotoBuffer = await sharp(userPhotoBuffer)
-      .rotate() // Auto EXIF orientation correction
-      .resize(PHOTO_WIDTH, PHOTO_HEIGHT, {
-        fit: "cover",
-        position: "center",
+    const basePhoto = sharp(userPhotoBuffer).rotate();
+    const meta = await basePhoto.metadata();
+    const origW = meta.width || PHOTO_WIDTH;
+    const origH = meta.height || PHOTO_HEIGHT;
+
+    const coverScale = Math.max(PHOTO_WIDTH / origW, PHOTO_HEIGHT / origH);
+    const effectiveZoom = Math.max(1.0, Math.min(3.0, zoom));
+    const totalScale = coverScale * effectiveZoom;
+
+    const scaledW = Math.round(origW * totalScale);
+    const scaledH = Math.round(origH * totalScale);
+
+    const resizedBuffer = await basePhoto
+      .resize(scaledW, scaledH, { fit: "cover" })
+      .toBuffer();
+
+    const panX = effectiveZoom > 1.0 ? offsetX : 0;
+    const panY = effectiveZoom > 1.0 ? offsetY : 0;
+
+    const maxCropX = Math.max(0, scaledW - PHOTO_WIDTH);
+    const maxCropY = Math.max(0, scaledH - PHOTO_HEIGHT);
+
+    const cropLeft = Math.max(
+      0,
+      Math.min(maxCropX, Math.round((scaledW - PHOTO_WIDTH) / 2 - panX))
+    );
+    const cropTop = Math.max(
+      0,
+      Math.min(maxCropY, Math.round((scaledH - PHOTO_HEIGHT) / 2 - panY))
+    );
+
+    // Crop & apply rounded corners mask
+    const unmaskedBuffer = await sharp(resizedBuffer)
+      .extract({
+        left: cropLeft,
+        top: cropTop,
+        width: PHOTO_WIDTH,
+        height: PHOTO_HEIGHT,
       })
       .toFormat("png")
       .toBuffer();
-  } catch (e) {
-    console.error("Error processing user photo with sharp:", e);
-    // Fallback: simple white placeholder block
-    processedPhotoBuffer = await sharp({
-      create: {
-        width: PHOTO_WIDTH,
-        height: PHOTO_HEIGHT,
-        channels: 4,
-        background: { r: 255, g: 255, b: 255, alpha: 1 },
-      },
-    })
-      .png()
+
+    // Create rounded corners mask (rx=48)
+    const roundedMaskSvg = `
+      <svg width="${PHOTO_WIDTH}" height="${PHOTO_HEIGHT}">
+        <rect x="0" y="0" width="${PHOTO_WIDTH}" height="${PHOTO_HEIGHT}" rx="48" fill="#FFFFFF"/>
+      </svg>
+    `;
+    const roundedMask = await sharp(Buffer.from(roundedMaskSvg)).png().toBuffer();
+
+    processedPhotoBuffer = await sharp(unmaskedBuffer)
+      .composite([{ input: roundedMask, blend: "dest-in" }])
       .toBuffer();
-  }
-
-  // Load brand SVG assets
-  let logoSvgContent = "";
-  let goaHindiSvgContent = "";
-
-  try {
-    const logoPath = path.join(process.cwd(), "public", "assets", "logo.svg");
-    if (fs.existsSync(logoPath)) {
-      logoSvgContent = fs.readFileSync(logoPath, "utf-8");
-    }
   } catch (e) {
-    console.warn("Could not load logo.svg:", e);
+    console.error("Error scaling photo in sharp:", e);
+    // Green background fallback
+    const fallbackSvg = `
+      <svg width="${PHOTO_WIDTH}" height="${PHOTO_HEIGHT}">
+        <rect x="0" y="0" width="${PHOTO_WIDTH}" height="${PHOTO_HEIGHT}" rx="48" fill="#1b6838"/>
+      </svg>
+    `;
+    processedPhotoBuffer = await sharp(Buffer.from(fallbackSvg)).png().toBuffer();
   }
 
-  try {
-    const hindiPath = path.join(
-      process.cwd(),
-      "public",
-      "assets",
-      "goa_hindi.svg"
-    );
-    if (fs.existsSync(hindiPath)) {
-      goaHindiSvgContent = fs.readFileSync(hindiPath, "utf-8");
-    }
-  } catch (e) {
-    console.warn("Could not load goa_hindi.svg:", e);
-  }
-
-  // Construct SVG Overlay for Card Graphics, Frame & Text
+  // 2. Construct Base SVG Graphics
   const svgOverlay = `
     <svg width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <style>
-          .title-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 54px; fill: #000000; letter-spacing: 2px; }
-          .name-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 48px; fill: #000000; letter-spacing: 1px; }
-          .stack-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 28px; fill: #FFFFFF; letter-spacing: 1.5px; }
-          .builder-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 32px; fill: #FEE101; letter-spacing: 2px; }
-          .sub-text { font-family: Arial, Helvetica, sans-serif; font-weight: 800; font-size: 22px; fill: #FFFFFF; letter-spacing: 3px; }
-          .badge-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 22px; fill: #000000; letter-spacing: 1px; }
+          .brand-title { font-family: Arial, sans-serif; font-weight: 900; font-size: 78px; fill: #FEE101; letter-spacing: -1px; }
+          .header-right-1 { font-family: Arial, sans-serif; font-weight: 900; font-size: 20px; fill: #FEE101; letter-spacing: 2px; }
+          .header-right-2 { font-family: Arial, sans-serif; font-weight: 900; font-size: 16px; fill: #FEE101; letter-spacing: 3px; }
+          .name-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 68px; fill: #FEE101; letter-spacing: 1px; }
+          .role-text { font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 34px; fill: #FEE101; letter-spacing: 1px; }
+          .id-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 26px; fill: #000000; letter-spacing: 2px; }
         </style>
-
-        <!-- Drop Shadow Filter for Neo Brutalism -->
         <filter id="shadow" x="0" y="0" width="120%" height="120%">
-          <feDropShadow dx="8" dy="8" stdDeviation="0" flood-color="#000000" flood-opacity="1" />
-        </filter>
-        <filter id="shadow-sm" x="0" y="0" width="120%" height="120%">
-          <feDropShadow dx="5" dy="5" stdDeviation="0" flood-color="#000000" flood-opacity="1" />
+          <feDropShadow dx="4" dy="4" stdDeviation="0" flood-color="#000000" flood-opacity="1" />
         </filter>
       </defs>
 
-      <!-- 1. Outer Yellow Frame (44px padding) -->
-      <rect x="0" y="0" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" fill="#FEE101" />
-      <rect x="44" y="44" width="${CARD_WIDTH - 88}" height="${CARD_HEIGHT - 88}" fill="#0B6839" stroke="#000000" stroke-width="8" />
+      <!-- Outer Green Card (rounded 48px) -->
+      <rect x="0" y="0" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="64" fill="#1b6838" />
 
-      <!-- Decorative Grid Lines in Header -->
-      <line x1="44" y1="280" x2="${CARD_WIDTH - 44}" y2="280" stroke="#000000" stroke-width="6" />
+      <!-- LANYARD HOLE CUT-OUT ON TOP OF CARD -->
+      <rect x="${(CARD_WIDTH - 240) / 2}" y="40" width="240" height="40" rx="20" fill="#000000" />
 
-      <!-- Top Header Bar -->
-      <!-- Left Badge: HH GOA 2026 -->
-      <rect x="80" y="80" width="340" height="60" fill="#FEE101" stroke="#000000" stroke-width="4" filter="url(#shadow-sm)" />
-      <text x="250" y="118" text-anchor="middle" class="badge-text">HH GOA 2026</text>
+      <!-- Header Title Text -->
+      <text x="90" y="165" class="brand-title">HACKER HOUSE</text>
 
-      <!-- Right Badge: BUILDER PASS -->
-      <rect x="${CARD_WIDTH - 420}" y="80" width="340" height="60" fill="#FF0080" stroke="#000000" stroke-width="4" filter="url(#shadow-sm)" />
-      <text x="${CARD_WIDTH - 250}" y="118" text-anchor="middle" class="badge-text" fill="#FFFFFF">BUILDER PASS</text>
+      <!-- Divider line below header -->
+      <line x1="90" y1="210" x2="${CARD_WIDTH - 90}" y2="210" stroke="#FEE101" stroke-opacity="0.3" stroke-width="4" />
 
-      <!-- Header Center Subtitle -->
-      <text x="${CARD_WIDTH / 2}" y="220" text-anchor="middle" class="sub-text">HACKER HOUSE GOA · 2026 EDITION</text>
-      <text x="${CARD_WIDTH / 2}" y="255" text-anchor="middle" class="sub-text" font-size="16px" fill="#FEE101">28 – 31 OCT 2026 · GOA, INDIA</text>
+      <!-- Subheader Right Text -->
+      <text x="${CARD_WIDTH - 90}" y="250" text-anchor="end" class="header-right-1">GOA, INDIA · 28 – 31 OCT 2026</text>
+      <text x="${CARD_WIDTH - 90}" y="280" text-anchor="end" class="header-right-2">LESS NOISE. MORE SIGNAL</text>
 
-      <!-- 2. Photo Container Box Background Shadow & Frame -->
-      <!-- Shadow Box behind photo -->
-      <rect x="${PHOTO_X + 10}" y="${PHOTO_Y + 10}" width="${PHOTO_WIDTH}" height="${PHOTO_HEIGHT}" fill="#000000" />
-      <!-- Photo Border Frame -->
-      <rect x="${PHOTO_X - 6}" y="${PHOTO_Y - 6}" width="${PHOTO_WIDTH + 12}" height="${PHOTO_HEIGHT + 12}" fill="#FEE101" stroke="#000000" stroke-width="6" />
+      <!-- Yellow Frame Border around 1:1 photo area -->
+      <rect x="${PHOTO_X}" y="${PHOTO_Y}" width="${PHOTO_WIDTH}" height="${PHOTO_HEIGHT}" rx="48" fill="none" stroke="#FEE101" stroke-width="6" />
 
-      <!-- Photo Corner Badge -->
-      <rect x="${PHOTO_X + 20}" y="${PHOTO_Y + 20}" width="220" height="48" fill="#FF0080" stroke="#000000" stroke-width="4" />
-      <text x="${PHOTO_X + 130}" y="${PHOTO_Y + 52}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="18px" fill="#FFFFFF">OFFICIAL BUILDER</text>
+      <!-- Bottom Details Section -->
+      <!-- Name -->
+      <text x="90" y="1465" class="name-text">${escapeXml(cleanName)}</text>
+      <!-- Role / Stack -->
+      <text x="90" y="1525" class="role-text">${escapeXml(cleanStack)}</text>
 
-      <!-- 3. Details Container Below Photo (Y ~ 980 to 1420) -->
-
-      <!-- Divider line below photo -->
-      <line x1="44" y1="980" x2="${CARD_WIDTH - 44}" y2="980" stroke="#000000" stroke-width="6" />
-
-      <!-- Name Card Box -->
+      <!-- ID Badge -->
       <g filter="url(#shadow)">
-        <rect x="80" y="1010" width="${CARD_WIDTH - 160}" height="100" fill="#FEE101" stroke="#000000" stroke-width="5" />
-        <text x="110" y="1050" font-family="Arial, sans-serif" font-weight="900" font-size="20px" fill="#000000">BUILDER NAME</text>
-        <text x="110" y="1092" class="name-text">${escapeXml(cleanName)}</text>
+        <rect x="90" y="1565" width="280" height="66" rx="16" fill="#FEE101" stroke="#000000" stroke-width="4" />
+        <text x="230" y="1608" text-anchor="middle" class="id-text">NO : ${escapeXml(cleanPassNo)}</text>
       </g>
-
-      <!-- Stack / Role Badge Box -->
-      <g filter="url(#shadow-sm)">
-        <rect x="80" y="1135" width="${CARD_WIDTH - 160}" height="76" fill="#FF0080" stroke="#000000" stroke-width="4" />
-        <text x="110" y="1182" class="stack-text">STACK: ${escapeXml(cleanStack)}</text>
-      </g>
-
-      <!-- Builder Title Banner -->
-      <g filter="url(#shadow-sm)">
-        <rect x="80" y="1235" width="${CARD_WIDTH - 160}" height="76" fill="#000000" stroke="#FEE101" stroke-width="4" />
-        <text x="110" y="1282" class="builder-text">CLASS: ${escapeXml(cleanTitle)}</text>
-      </g>
-
-      <!-- Footer Hashtag & Links -->
-      <rect x="44" y="1380" width="${CARD_WIDTH - 88}" height="76" fill="#FEE101" stroke="#000000" stroke-width="4" />
-      <text x="80" y="1428" font-family="Arial, sans-serif" font-weight="900" font-size="30px" fill="#000000">#FrameInGoa</text>
-      <text x="${CARD_WIDTH - 80}" y="1428" text-anchor="end" font-family="Arial, sans-serif" font-weight="900" font-size="24px" fill="#000000">HHGOA.COM</text>
     </svg>
   `;
 
-  // Base background card layer (1200x1500)
+  // Base green card canvas
   const baseCard = sharp({
     create: {
       width: CARD_WIDTH,
       height: CARD_HEIGHT,
       channels: 4,
-      background: { r: 11, g: 104, b: 57, alpha: 1 },
+      background: { r: 27, g: 104, b: 56, alpha: 1 },
     },
   });
 
-  // Composite user photo and SVG graphics overlay
   const compositeInputs: OverlayOptions[] = [
+    // 1. Processed user photo placed AT PHOTO_X, PHOTO_Y
     {
       input: processedPhotoBuffer,
       top: PHOTO_Y,
       left: PHOTO_X,
     },
+    // 2. SVG Overlay placed on top
     {
       input: Buffer.from(svgOverlay),
       top: 0,
@@ -198,35 +193,59 @@ export async function generateCardImage(
     },
   ];
 
-  // If brand logo SVGs exist, overlay them neatly
-  if (logoSvgContent) {
-    try {
-      const resizedLogo = await sharp(Buffer.from(logoSvgContent))
-        .resize(160, 140, { fit: "contain" })
+  // 3. Composite header assets and selected frame overlay
+  const assetsDir = path.join(process.cwd(), "public", "assets");
+
+  // goa_hindi.svg (Top Right)
+  try {
+    const goaHindiPath = path.join(assetsDir, "goa_hindi.svg");
+    if (fs.existsSync(goaHindiPath)) {
+      const goaHindiBuf = await sharp(goaHindiPath)
+        .resize(200, 100, { fit: "contain" })
         .toBuffer();
       compositeInputs.push({
-        input: resizedLogo,
-        top: 150,
-        left: 80,
+        input: goaHindiBuf,
+        top: 90,
+        left: CARD_WIDTH - 290,
       });
-    } catch (e) {
-      console.warn("Could not composite logo.svg:", e);
     }
+  } catch (e) {
+    console.warn("Could not composite goa_hindi.svg:", e);
   }
 
-  if (goaHindiSvgContent) {
-    try {
-      const resizedHindi = await sharp(Buffer.from(goaHindiSvgContent))
-        .resize(160, 140, { fit: "contain" })
+  // 2-47.svg (Subheader Left)
+  try {
+    const studioPath = path.join(assetsDir, "2-47.svg");
+    if (fs.existsSync(studioPath)) {
+      const studioBuf = await sharp(studioPath)
+        .resize(180, 60, { fit: "contain" })
         .toBuffer();
       compositeInputs.push({
-        input: resizedHindi,
-        top: 150,
-        left: CARD_WIDTH - 240,
+        input: studioBuf,
+        top: 230,
+        left: 90,
       });
-    } catch (e) {
-      console.warn("Could not composite goa_hindi.svg:", e);
     }
+  } catch (e) {
+    console.warn("Could not composite 2-47.svg:", e);
+  }
+
+  // Selected Frame Overlay (frame1.png, frame2.png, frame3.png, frame4.png)
+  try {
+    const frameAsset = selectedFrame || "frame1.png";
+    const framePath = path.join(assetsDir, frameAsset);
+    if (fs.existsSync(framePath)) {
+      const frameBuf = await sharp(framePath)
+        .resize(PHOTO_WIDTH, PHOTO_HEIGHT, { fit: "cover" })
+        .toBuffer();
+      compositeInputs.push({
+        input: frameBuf,
+        top: PHOTO_Y,
+        left: PHOTO_X,
+      });
+    }
+  } catch (e) {
+    console.warn("Could not composite frame overlay:", e);
   }
 
   const finalPngBuffer = await baseCard

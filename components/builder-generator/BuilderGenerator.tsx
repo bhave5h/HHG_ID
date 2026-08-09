@@ -1,21 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
-import UploadZone from "./UploadZone";
+import React, { useState, useEffect, useRef } from "react";
 import BuilderForm from "./BuilderForm";
+import UploadZone from "./UploadZone";
 import CardPreview from "./CardPreview";
 import ResultActions from "./ResultActions";
 import PromotionalLinks from "@/components/ui/PromotionalLinks";
 
 export default function BuilderGenerator() {
-  // State
+  // Photo & Transformation State
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
+  const [zoom, setZoom] = useState<number>(1.0);
+  const [offsetX, setOffsetX] = useState<number>(0);
+  const [offsetY, setOffsetY] = useState<number>(0);
 
+  // Form Details State
   const [name, setName] = useState("");
   const [stack, setStack] = useState("");
-  const [builderTitle, setBuilderTitle] = useState("");
+  const [passNo, setPassNo] = useState<string>("57236");
+  const [selectedFrame, setSelectedFrame] = useState<string>("frame1.png");
 
+  // Auto-generate unique random pass number on mount
+  useEffect(() => {
+    setPassNo(Math.floor(10000 + Math.random() * 90000).toString());
+  }, []);
+
+  // Status State
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -36,11 +47,14 @@ export default function BuilderGenerator() {
   const handleClearPhoto = () => {
     setPhotoFile(null);
     setPhotoPreviewUrl(null);
+    setZoom(1);
+    setOffsetX(0);
+    setOffsetY(0);
   };
 
   const handleGenerate = async () => {
     if (!photoFile) {
-      setErrorMsg("Please upload your photo before generating.");
+      setErrorMsg("Please upload your photo to your ID card first!");
       return;
     }
 
@@ -57,7 +71,11 @@ export default function BuilderGenerator() {
       formData.append("photo", photoFile);
       formData.append("name", name);
       formData.append("stack", stack);
-      formData.append("builderTitle", builderTitle);
+      formData.append("passNo", passNo);
+      formData.append("selectedFrame", selectedFrame);
+      formData.append("zoom", zoom.toString());
+      formData.append("offsetX", offsetX.toString());
+      formData.append("offsetY", offsetY.toString());
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -68,7 +86,7 @@ export default function BuilderGenerator() {
 
       if (!res.ok || !data.success) {
         throw new Error(
-          data.error || "Failed to generate ID card. Please try again."
+          data.error || "Failed to generate ID card. Please try again.",
         );
       }
 
@@ -83,7 +101,7 @@ export default function BuilderGenerator() {
       console.error("Card generation failed:", err);
       setErrorMsg(
         err.message ||
-          "Something went wrong while creating your Builder Card. Please try again."
+          "Something went wrong while creating your Builder Card. Please try again.",
       );
     } finally {
       setIsGenerating(false);
@@ -93,77 +111,135 @@ export default function BuilderGenerator() {
   const handleReset = () => {
     setPhotoFile(null);
     setPhotoPreviewUrl(null);
+    setZoom(1);
+    setOffsetX(0);
+    setOffsetY(0);
     setName("");
     setStack("");
-    setBuilderTitle("");
+    setSelectedFrame("frame1.png");
+    setPassNo(Math.floor(10000 + Math.random() * 90000).toString());
     setGeneratedResult(null);
     setErrorMsg(null);
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
-      {/* Hero Branding Section */}
-      <header className="w-full text-center mb-8">
-        {/* Top Header Badge */}
-        <div className="inline-block bg-[#FEE101] text-black font-black uppercase text-xs sm:text-sm px-4 py-1.5 border-3 border-black shadow-[4px_4px_0px_0px_#000] mb-4">
-          HH GOA 2026 · HACKATHON BUILDER CREDENTIAL
+    <div className="w-full max-w-5xl mx-auto flex flex-col items-center font-body">
+      {/* 1. Header Layout: Left Date, Center logo.svg, Right Tagline */}
+      <header className="w-full flex flex-col items-center mb-6">
+        <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 py-2">
+          {/* Left Text */}
+          <div className="font-['Imbue'] font-heading font-black text-xl sm:text-2xl text-[#FEE101] tracking-wider uppercase text-center sm:text-left">
+            OCT 28–31 · 2026 · GOA
+          </div>
+
+          {/* Center logo.svg */}
+          <div className="w-48 sm:w-64 h-16 sm:h-20 flex items-center justify-center">
+            <img
+              src="/assets/logo.svg"
+              alt="Hacker House Goa Logo"
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+
+          {/* Right Text */}
+          <div className="font-['Imbue'] font-heading font-black text-xl sm:text-2xl text-white tracking-wider uppercase text-center sm:text-right">
+            LESS NOISE. MORE SIGNAL
+          </div>
         </div>
 
-        {/* Hero Title */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-white drop-shadow-[4px_4px_0px_#000]">
-          CLAIM YOUR <span className="text-[#FEE101]">BUILDER PASS</span>
-        </h1>
-
-        {/* Hero Subtitle */}
-        <p className="mt-3 text-sm sm:text-lg font-bold text-white/90 max-w-xl mx-auto drop-shadow-[1px_1px_0px_#000]">
-          Upload your photo, tell us what you build, instantly get your official HH Goa 2026 Builder Card and share it on X.
-        </p>
+        {/* Divider Line Below Header */}
+        <hr className="w-full border-t-2 border-white/30 mt-2 mb-4" />
       </header>
 
-      {/* Main Generator Box (Desktop: Two Columns; Mobile: Collapsed Single Column) */}
-      <div className="w-full neo-card p-4 sm:p-6 md:p-8 bg-[#FFFBE8] shadow-[8px_8px_0px_0px_#000]">
+      {/* 2. Main Radar-Style Container Card */}
+      <div className="w-full hhg-container-radar flex flex-col gap-6">
+        {/* Task Header Badge */}
+        <div className="flex flex-col gap-1">
+          <span className="font-['Imbue'] font-heading font-black text-sm uppercase tracking-widest text-[#FF0080]">
+            TASK #1
+          </span>
+          <h2 className="font-['Imbue'] font-heading font-black text-3xl sm:text-4xl uppercase tracking-tight text-[#0B6839]">
+            HH Goa Frame / ID Card Generator
+          </h2>
+          <p className="font-body text-xs sm:text-sm text-zinc-700 max-w-2xl mt-1">
+            Design your own HH Goa 2026 themed photo frame generator. Upload
+            your photo in the control panel below, choose your frame style, and
+            generate your shareable credential.
+          </p>
+        </div>
+
         {errorMsg && (
-          <div className="mb-6 p-4 neo-card-pink text-center font-bold text-sm sm:text-base">
+          <div className="p-4 neo-card-pink text-center font-bold text-xs sm:text-sm">
             ⚠️ {errorMsg}
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Form & Controls (7 Cols on desktop) */}
-          <div className="lg:col-span-7 flex flex-col gap-6">
-            {!generatedResult ? (
-              <>
-                {/* Upload Section */}
-                <div className="bg-white p-4 sm:p-5 neo-card">
-                  <h3 className="text-sm font-black uppercase tracking-wider mb-3 text-black">
-                    STEP 1: UPLOADER
-                  </h3>
-                  <UploadZone
-                    onPhotoSelected={handlePhotoSelected}
-                    selectedPreviewUrl={photoPreviewUrl}
-                    onClearPhoto={handleClearPhoto}
-                  />
-                </div>
+        {/* Two Column Layout: Left = Details Box with Image Upload on top; Right = Live Card Preview */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+          {/* LEFT COLUMN: Details Box containing Frame Selector + Image Upload on top + Change/Remove buttons + Form */}
+          <div className="md:col-span-6 flex flex-col gap-6">
+            <div className="bg-white p-5 neo-card flex flex-col gap-5">
+              <h3 className="font-['Imbue'] font-heading font-black text-xl uppercase tracking-wider text-[#0B6839] border-b-2 border-black pb-2">
+                BUILDER DETAILS & PHOTO
+              </h3>
 
-                {/* Details Form */}
-                <div className="bg-white p-4 sm:p-5 neo-card">
-                  <h3 className="text-sm font-black uppercase tracking-wider mb-3 text-black">
-                    STEP 2: BUILDER DETAILS
-                  </h3>
-                  <BuilderForm
-                    name={name}
-                    setName={setName}
-                    stack={stack}
-                    setStack={setStack}
-                    builderTitle={builderTitle}
-                    setBuilderTitle={setBuilderTitle}
-                    onGenerate={handleGenerate}
-                    isGenerating={isGenerating}
-                    hasPhoto={!!photoFile}
-                  />
-                </div>
-              </>
-            ) : (
+              {/* 1. FRAME SELECTOR & IMAGE UPLOAD ON TOP INSIDE DETAILS BOX */}
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">
+                  FRAME & PHOTO UPLOAD <span className="text-[#FF0080]">*</span>
+                </label>
+                <UploadZone
+                  onPhotoSelected={handlePhotoSelected}
+                  selectedPreviewUrl={photoPreviewUrl}
+                  onClearPhoto={handleClearPhoto}
+                  selectedFrame={selectedFrame}
+                  setSelectedFrame={setSelectedFrame}
+                  zoom={zoom}
+                  setZoom={setZoom}
+                  offsetX={offsetX}
+                  setOffsetX={setOffsetX}
+                  offsetY={offsetY}
+                  setOffsetY={setOffsetY}
+                />
+              </div>
+
+              {/* 2. INPUT FIELDS, ZOOM & POSITION CONTROLS + GENERATE BUTTON */}
+              <BuilderForm
+                name={name}
+                setName={setName}
+                stack={stack}
+                setStack={setStack}
+                passNo={passNo}
+                onGenerate={handleGenerate}
+                isGenerating={isGenerating}
+                hasPhoto={!!photoFile}
+                zoom={zoom}
+                setZoom={setZoom}
+                offsetX={offsetX}
+                setOffsetX={setOffsetX}
+                offsetY={offsetY}
+                setOffsetY={setOffsetY}
+              />
+            </div>
+
+            {/* Task Highlights Bullet List */}
+            <div className="bg-[#FAF7E6] p-4 border border-[#0B6839]/20 rounded-xl space-y-2 text-xs font-bold text-zinc-800">
+              <div className="flex items-start gap-2">
+                <span className="text-[#FF0080]">✦</span>
+                <span>Instantly recognizable HH Goa 2026 identity</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-[#FF0080]">✦</span>
+                <span>1-click download + 1-click Share to X (#FrameInGoa)</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-[#FF0080]">✦</span>
+                <span>4 unique Goa frame overlays available</span>
+              </div>
+            </div>
+
+            {/* Generated Actions */}
+            {generatedResult && (
               <ResultActions
                 cardUrl={generatedResult.cardUrl}
                 shareUrl={generatedResult.shareUrl}
@@ -174,21 +250,24 @@ export default function BuilderGenerator() {
             )}
           </div>
 
-          {/* Right Column: Live Interactive Card Preview (5 Cols on desktop) */}
-          <div className="lg:col-span-5 flex flex-col items-center">
+          {/* RIGHT COLUMN: Live 2:3 ID Card Preview (Pure Visual Output) */}
+          <div className="md:col-span-6 flex flex-col items-center">
             <div className="w-full mb-2 flex items-center justify-between">
-              <span className="text-xs font-black uppercase text-black">
-                LIVE CARD PREVIEW
+              <span className="font-['Imbue'] font-heading font-black text-sm uppercase text-[#0B6839]">
+                LIVE ID CARD PREVIEW (2:3)
               </span>
-              <span className="neo-badge-yellow">1200 × 1500 HD</span>
+              <span className="neo-badge-yellow">1200 × 1800 HD</span>
             </div>
 
             <CardPreview
               photoPreviewUrl={photoPreviewUrl}
               name={name}
               stack={stack}
-              builderTitle={builderTitle}
-              generatedImageUrl={generatedResult ? generatedResult.cardUrl : null}
+              passNo={passNo}
+              selectedFrame={selectedFrame}
+              zoom={zoom}
+              offsetX={offsetX}
+              offsetY={offsetY}
             />
           </div>
         </div>

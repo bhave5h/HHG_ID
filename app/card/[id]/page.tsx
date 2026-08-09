@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         {
           url: imageUrl,
           width: 1200,
-          height: 1500,
+          height: 1800,
           alt: `${name}'s HH Goa 2026 Builder Pass`,
         },
       ],
@@ -58,13 +58,13 @@ export default async function CardSharePage({ params }: Props) {
   const xShareUrl = getXShareUrl(id, "https://hhgoa-id.vercel.app", card?.name);
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-10 bg-[#0B6839]">
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-10 bg-[#0B6839] font-body">
       {/* Visual Header */}
       <div className="w-full max-w-xl mb-6 text-center">
         <div className="inline-block bg-[#FEE101] text-black font-black uppercase text-xs sm:text-sm px-4 py-1.5 border-2 border-black shadow-[3px_3px_0px_0px_#000] mb-3">
           OFFICIAL BUILDER CREDENTIAL
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white drop-shadow-[2px_2px_0px_#000]">
+        <h1 className="text-3xl sm:text-5xl font-heading font-black uppercase tracking-tight text-white drop-shadow-[2px_2px_0px_#000]">
           {card?.name || "HH Goa 2026 Builder Pass"}
         </h1>
         <p className="text-sm sm:text-base font-bold text-[#FEE101] mt-1">
@@ -72,9 +72,9 @@ export default async function CardSharePage({ params }: Props) {
         </p>
       </div>
 
-      {/* Main Card Display Frame */}
+      {/* Main Card Display Frame (2:3 Aspect Ratio) */}
       <div className="w-full max-w-xl neo-card p-4 bg-white mb-8">
-        <div className="relative w-full aspect-[4/5] bg-zinc-100 border-3 border-black overflow-hidden shadow-[4px_4px_0px_0px_#000]">
+        <div className="relative w-full aspect-[2/3] bg-zinc-100 border-3 border-black overflow-hidden shadow-[4px_4px_0px_0px_#000]">
           {/* Real Card Image */}
           <img
             src={cardImageUrl}
