@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { convertHeicToJpegIfNeeded } from "@/lib/image/heic";
+import FrameSelector from "./FrameSelector";
 
 interface UploadZoneProps {
   onPhotoSelected: (file: File, previewUrl: string) => void;
@@ -10,11 +11,8 @@ interface UploadZoneProps {
   selectedFrame: string;
   setSelectedFrame: (frame: string) => void;
   zoom: number;
-  setZoom: (z: number) => void;
   offsetX: number;
-  setOffsetX: (x: number) => void;
   offsetY: number;
-  setOffsetY: (y: number) => void;
 }
 
 export default function UploadZone({
@@ -24,22 +22,12 @@ export default function UploadZone({
   selectedFrame,
   setSelectedFrame,
   zoom,
-  setZoom,
   offsetX,
-  setOffsetX,
   offsetY,
-  setOffsetY,
 }: UploadZoneProps) {
   const [isConverting, setIsConverting] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const frames = [
-    { id: "frame1.png", label: "Frame 1" },
-    { id: "frame2.png", label: "Frame 2" },
-    { id: "frame3.png", label: "Frame 3" },
-    { id: "frame4.png", label: "Frame 4" },
-  ];
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -61,9 +49,6 @@ export default function UploadZone({
       const processedFile = await convertHeicToJpegIfNeeded(originalFile);
       const previewUrl = URL.createObjectURL(processedFile);
       onPhotoSelected(processedFile, previewUrl);
-      setZoom(1);
-      setOffsetX(0);
-      setOffsetY(0);
     } catch (err) {
       console.error("Image processing error:", err);
       alert("Could not process this photo. Please try another image.");
@@ -104,31 +89,11 @@ export default function UploadZone({
         onChange={(e) => handleFiles(e.target.files)}
       />
 
-      {/* Frame Choice Selector */}
-      <div>
-        <label className="block text-xs font-black uppercase tracking-wider text-black mb-1.5">
-          CHOOSE FRAME STYLE:
-        </label>
-        <div className="grid grid-cols-4 gap-2">
-          {frames.map((frame) => {
-            const isSelected = selectedFrame === frame.id;
-            return (
-              <button
-                key={frame.id}
-                type="button"
-                onClick={() => setSelectedFrame(frame.id)}
-                className={`py-2 px-1 text-xs font-black uppercase border-2 border-black transition-all cursor-pointer text-center rounded ${
-                  isSelected
-                    ? "bg-[#FEE101] text-black shadow-[3px_3px_0px_0px_#000] scale-[1.02]"
-                    : "bg-white text-zinc-700 hover:bg-[#FFFBE8] shadow-[2px_2px_0px_0px_#000]"
-                }`}
-              >
-                {frame.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      {/* Frame Choice Selector Component */}
+      <FrameSelector
+        selectedFrame={selectedFrame}
+        setSelectedFrame={setSelectedFrame}
+      />
 
       {selectedPreviewUrl ? (
         <div className="flex flex-col gap-3">

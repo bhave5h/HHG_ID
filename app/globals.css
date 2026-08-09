@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Imbue:opsz,wght@10..100,100..900&family=Victor+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+/* Fonts loaded via next/font/google in layout.tsx (Imbue + Victor Mono) */
 @import "tailwindcss";
 
 :root {
@@ -19,8 +19,8 @@
   --color-hhg-pink: var(--hhg-pink);
   --color-hhg-black: var(--hhg-black);
   --color-hhg-cream: var(--hhg-cream);
-  --font-imbue: 'Imbue', serif;
-  --font-victor: 'Victor Mono', monospace;
+  --font-imbue: var(--font-imbue), serif;
+  --font-victor: var(--font-victor-mono), monospace;
 }
 
 body {
@@ -28,7 +28,7 @@ body {
   background-image: radial-gradient(rgba(0, 0, 0, 0.15) 1px, transparent 1px);
   background-size: 20px 20px;
   color: var(--hhg-black);
-  font-family: 'Victor Mono', monospace;
+  font-family: var(--font-victor-mono), monospace;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -36,11 +36,11 @@ body {
 
 /* Typography Classes */
 .font-heading {
-  font-family: 'Imbue', serif;
+  font-family: var(--font-imbue), serif;
 }
 
 .font-body {
-  font-family: 'Victor Mono', monospace;
+  font-family: var(--font-victor-mono), monospace;
 }
 
 /* Simplified CSS Component Classes using Tailwind @apply */

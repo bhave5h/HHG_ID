@@ -1,7 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Imbue, Victor_Mono } from "next/font/google";
 import "./globals.css";
 
+const imbue = Imbue({
+  variable: "--font-imbue",
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+const victorMono = Victor_Mono({
+  variable: "--font-victor-mono",
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "HHG | ID Card Generator",
@@ -37,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={` h-full antialiased`}
+      className={`${imbue.variable} ${victorMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col antialiased selection:bg-[#FF0080] selection:text-white">
         {children}
