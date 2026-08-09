@@ -1,26 +1,170 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --hhg-green: #0b6839;
+  --hhg-yellow: #fee101;
+  --hhg-pink: #ff0080;
+  --hhg-black: #000000;
+  --hhg-cream: #fffbe8;
+  --hhg-white: #ffffff;
+  
+  --background: var(--hhg-green);
+  --foreground: #000000;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-hhg-green: var(--hhg-green);
+  --color-hhg-yellow: var(--hhg-yellow);
+  --color-hhg-pink: var(--hhg-pink);
+  --color-hhg-black: var(--hhg-black);
+  --color-hhg-cream: var(--hhg-cream);
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--hhg-green);
+  background-image: radial-gradient(rgba(0, 0, 0, 0.15) 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--hhg-black);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
+
+/* Neo-Brutalism Design Utilities */
+.neo-card {
+  background-color: #ffffff;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px 0px #000000;
+  border-radius: 0px;
+}
+
+.neo-card-yellow {
+  background-color: var(--hhg-yellow);
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px 0px #000000;
+  color: #000000;
+  border-radius: 0px;
+}
+
+.neo-card-pink {
+  background-color: var(--hhg-pink);
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px 0px #000000;
+  color: #ffffff;
+  border-radius: 0px;
+}
+
+.neo-btn {
+  background-color: var(--hhg-yellow);
+  color: #000000;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.neo-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #000000;
+}
+
+.neo-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px 0px #000000;
+}
+
+.neo-btn-pink {
+  background-color: var(--hhg-pink);
+  color: #ffffff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.neo-btn-pink:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #000000;
+}
+
+.neo-btn-pink:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px 0px #000000;
+}
+
+.neo-btn-black {
+  background-color: #000000;
+  color: #ffffff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px 0px var(--hhg-yellow);
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.neo-btn-black:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px var(--hhg-yellow);
+}
+
+.neo-input {
+  width: 100%;
+  background-color: #ffffff;
+  border: 3px solid #000000;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  color: #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  border-radius: 0px;
+}
+
+.neo-input:focus {
+  outline: none;
+  background-color: #fffbe8;
+  box-shadow: 4px 4px 0px 0px var(--hhg-pink);
+}
+
+.neo-badge-yellow {
+  background-color: var(--hhg-yellow);
+  color: #000000;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px 0px #000000;
+}
+
+.neo-badge-pink {
+  background-color: var(--hhg-pink);
+  color: #ffffff;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px 0px #000000;
+}
+
