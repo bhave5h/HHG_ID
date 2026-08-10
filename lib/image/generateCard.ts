@@ -123,44 +123,58 @@ export async function generateCardImage(
     <svg width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <style>
-          .brand-title { font-family: Arial, sans-serif; font-weight: 900; font-size: 78px; fill: #FEE101; letter-spacing: -1px; }
-          .header-right-1 { font-family: Arial, sans-serif; font-weight: 900; font-size: 20px; fill: #FEE101; letter-spacing: 2px; }
-          .header-right-2 { font-family: Arial, sans-serif; font-weight: 900; font-size: 16px; fill: #FEE101; letter-spacing: 3px; }
-          .name-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 68px; fill: #FEE101; letter-spacing: 1px; }
-          .role-text { font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 34px; fill: #FEE101; letter-spacing: 1px; }
-          .id-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 26px; fill: #000000; letter-spacing: 2px; }
+          .brand-title { font-family: Imbue, Georgia, serif; font-weight: 900; font-size: 90px; fill: #FEE101; letter-spacing: -1px; }
+          .header-right-1 { font-family: Imbue, Georgia, serif; font-weight: 900; font-size: 24px; fill: #FEE101; letter-spacing: 2px; }
+          .header-right-2 { font-family: Imbue, Georgia, serif; font-weight: 900; font-size: 20px; fill: #FEE101; letter-spacing: 3px; }
+          .name-text { font-family: Imbue, Georgia, serif; font-weight: 900; font-size: 88px; fill: #FEE101; letter-spacing: -1px; }
+          .role-text { font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 42px; fill: #a3e635; letter-spacing: 0px; }
+          .id-text { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 32px; fill: #0B6839; letter-spacing: 2px; }
         </style>
-        <filter id="shadow" x="0" y="0" width="120%" height="120%">
-          <feDropShadow dx="4" dy="4" stdDeviation="0" flood-color="#000000" flood-opacity="1" />
-        </filter>
       </defs>
 
       <!-- LANYARD HOLE CUT-OUT ON TOP OF CARD -->
-      <rect x="${(CARD_WIDTH - 240) / 2}" y="40" width="240" height="40" rx="20" fill="#000000" />
+      <circle cx="600" cy="60" r="36" fill="#000000" />
 
-      <!-- Header Title Text -->
-      <text x="90" y="165" class="brand-title">HACKER HOUSE</text>
-
-      <!-- Divider line below header -->
-      <line x1="90" y1="210" x2="${CARD_WIDTH - 90}" y2="210" stroke="#FEE101" stroke-opacity="0.3" stroke-width="4" />
+      <!-- Header Title Text (Removed, using logo.png composite instead) -->
 
       <!-- Subheader Right Text -->
-      <text x="${CARD_WIDTH - 90}" y="250" text-anchor="end" class="header-right-1">GOA, INDIA · 28 – 31 OCT 2026</text>
-      <text x="${CARD_WIDTH - 90}" y="280" text-anchor="end" class="header-right-2">LESS NOISE. MORE SIGNAL</text>
+      <text x="${CARD_WIDTH - 90}" y="245" text-anchor="end" class="header-right-1">GOA, INDIA · 28 – 31 OCT 2026</text>
+      <text x="${CARD_WIDTH - 90}" y="275" text-anchor="end" class="header-right-2">LESS NOISE. MORE SIGNAL</text>
 
-      <!-- Yellow Frame Border around 1:1 photo area -->
-      <rect x="${PHOTO_X}" y="${PHOTO_Y}" width="${PHOTO_WIDTH}" height="${PHOTO_HEIGHT}" rx="48" fill="none" stroke="#FEE101" stroke-width="6" />
+      <!-- Yellow Photo Frame Border -->
+      <rect x="${PHOTO_X}" y="${PHOTO_Y}" width="${PHOTO_WIDTH}" height="${PHOTO_HEIGHT}" rx="48" fill="none" stroke="#FEE101" stroke-width="12" />
 
       <!-- Bottom Details Section -->
-      <!-- Name -->
-      <text x="90" y="1465" class="name-text">${escapeXml(cleanName)}</text>
-      <!-- Role / Stack -->
+      <!-- Name in Yellow -->
+      <text x="90" y="1460" class="name-text">${escapeXml(cleanName)}</text>
+      <!-- Role / Stack in Light Green/Yellow -->
       <text x="90" y="1525" class="role-text">${escapeXml(cleanStack)}</text>
 
-      <!-- ID Badge -->
-      <g filter="url(#shadow)">
-        <rect x="90" y="1565" width="280" height="66" rx="16" fill="#FEE101" stroke="#000000" stroke-width="4" />
-        <text x="230" y="1608" text-anchor="middle" class="id-text">NO : ${escapeXml(cleanPassNo)}</text>
+      <!-- ID Badge in Yellow Pill Box with Green Text -->
+      <g>
+        <rect x="90" y="1565" width="300" height="72" rx="18" fill="#FEE101" />
+        <text x="240" y="1612" text-anchor="middle" class="id-text">NO : ${escapeXml(cleanPassNo)}</text>
+      </g>
+
+      <!-- Yellow QR Code Graphic on Bottom Right -->
+      <g transform="translate(940, 1450)" fill="#FEE101">
+        <rect x="0" y="0" width="50" height="50" />
+        <rect x="10" y="10" width="30" height="30" fill="#1b6838" />
+        <rect x="18" y="18" width="14" height="14" fill="#FEE101" />
+
+        <rect x="120" y="0" width="50" height="50" />
+        <rect x="130" y="10" width="30" height="30" fill="#1b6838" />
+        <rect x="138" y="18" width="14" height="14" fill="#FEE101" />
+
+        <rect x="0" y="120" width="50" height="50" />
+        <rect x="10" y="130" width="30" height="30" fill="#1b6838" />
+        <rect x="18" y="138" width="14" height="14" fill="#FEE101" />
+
+        <rect x="70" y="10" width="15" height="40" />
+        <rect x="70" y="70" width="30" height="30" />
+        <rect x="115" y="70" width="25" height="25" />
+        <rect x="115" y="110" width="55" height="30" />
+        <rect x="70" y="120" width="25" height="40" />
       </g>
     </svg>
   `;
@@ -192,6 +206,23 @@ export async function generateCardImage(
 
   // 3. Composite header assets and selected frame overlay
   const assetsDir = path.join(process.cwd(), "public", "assets");
+
+  // logo.png (Top Left)
+  try {
+    const logoPath = path.join(assetsDir, "logo.png");
+    if (fs.existsSync(logoPath)) {
+      const logoBuf = await sharp(logoPath)
+        .resize(400, 100, { fit: "contain", position: "left" })
+        .toBuffer();
+      compositeInputs.push({
+        input: logoBuf,
+        top: 90,
+        left: 90,
+      });
+    }
+  } catch (e) {
+    console.warn("Could not composite logo.png:", e);
+  }
 
   // goa_hindi.svg (Top Right)
   try {

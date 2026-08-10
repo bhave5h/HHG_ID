@@ -1,5 +1,5 @@
 import React from "react";
-import LanyardCardPreview from "./LanyardCardPreview";
+import IDCardPreview from "./IDCardPreview";
 import ResultActions from "./ResultActions";
 
 interface PreviewSectionProps {
@@ -39,9 +39,8 @@ export default function PreviewSection({
     <div className="flex flex-col items-center gap-6 font-body w-full">
       {/* Live ID Card Preview */}
       <div className="w-full">
-
-
-        <LanyardCardPreview
+        
+        <IDCardPreview
           photoPreviewUrl={photoPreviewUrl}
           name={name}
           stack={stack}

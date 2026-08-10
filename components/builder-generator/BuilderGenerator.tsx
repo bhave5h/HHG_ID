@@ -11,7 +11,9 @@ export default function BuilderGenerator() {
   // Photo & Transformation State
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
-  const [renderedCardDataUrl, setRenderedCardDataUrl] = useState<string | null>(null);
+  const [renderedCardDataUrl, setRenderedCardDataUrl] = useState<string | null>(
+    null,
+  );
   const [zoom, setZoom] = useState<number>(1.0);
   const [offsetX, setOffsetX] = useState<number>(0);
   const [offsetY, setOffsetY] = useState<number>(0);
