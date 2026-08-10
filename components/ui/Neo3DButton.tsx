@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface Neo3DButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  variant?: "yellow" | "pink" | "black";
+  variant?: "yellow" | "pink" | "black" | "outline-pink";
   className?: string;
   asAnchor?: boolean;
   href?: string;
@@ -31,6 +31,8 @@ export default function Neo3DButton({
       ? "btn-3d-pink"
       : variant === "black"
       ? "btn-3d-black"
+      : variant === "outline-pink"
+      ? "btn-3d-outline-pink"
       : "";
 
   if (asAnchor && href) {

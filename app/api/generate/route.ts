@@ -33,22 +33,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Read photo buffer
-    const photoArrayBuffer = await photoFile.arrayBuffer();
-    const userPhotoBuffer = Buffer.from(photoArrayBuffer);
+    const cardImageDataUrl = formData.get("cardImageDataUrl") as string | null;
 
-    // 1. Generate 1200x1800 PNG with Sharp (2:3 Aspect Ratio)
-    const cardPngBuffer = await generateCardImage({
-      userPhotoBuffer,
-      name,
-      stack,
-      builderTitle,
-      passNo,
-      selectedFrame,
-      zoom,
-      offsetX,
-      offsetY,
-    });
+    let cardPngBuffer: Buffer;
+    if (cardImageDataUrl && cardImageDataUrl.startsWith("data:image/png;base64,")) {
+      const base64Data = cardImageDataUrl.replace(/^data:image\/png;base64,/, "");
+      cardPngBuffer = Buffer.from(base64Data, "base64");
+    } else {
+      // Read photo buffer fallback
+      const photoArrayBuffer = await photoFile.arrayBuffer();
+      const userPhotoBuffer = Buffer.from(photoArrayBuffer);
+
+      // Generate 1200x1800 PNG with Sharp
+      cardPngBuffer = await generateCardImage({
+        userPhotoBuffer,
+        name,
+        stack,
+        builderTitle,
+        passNo,
+        selectedFrame,
+        zoom,
+        offsetX,
+        offsetY,
+      });
+    }
 
     // 2. Generate unique Card ID
     const cardId = generateCardId();

@@ -47,7 +47,7 @@ export default function UploadSection({
   return (
     <div className="bg-[#FFFBE8] p-5 flex flex-col gap-5 font-body rounded-lg shadow-[7px_7px_0px_0px_#084e2a]">
       <h3 className="font-['Imbue'] font-heading font-black text-xl uppercase tracking-wider text-[#0B6839] border-b-2 border-black pb-2">
-        BUILDER DETAILS & PHOTO
+        Add Your Details
       </h3>
 
       {/* INPUT FIELDS, FRAME CHOICE, PHOTO UPLOAD, ZOOM & GENERATE BUTTON */}

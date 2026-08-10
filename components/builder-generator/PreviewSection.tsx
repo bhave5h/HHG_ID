@@ -11,6 +11,7 @@ interface PreviewSectionProps {
   zoom: number;
   offsetX: number;
   offsetY: number;
+  onCardTextureGenerated?: (dataUrl: string) => void;
   generatedResult: {
     id: string;
     cardUrl: string;
@@ -30,6 +31,7 @@ export default function PreviewSection({
   zoom,
   offsetX,
   offsetY,
+  onCardTextureGenerated,
   generatedResult,
   onReset,
 }: PreviewSectionProps) {
@@ -54,6 +56,7 @@ export default function PreviewSection({
           offsetX={offsetX}
           offsetY={offsetY}
           cardUrl={generatedResult?.cardUrl}
+          onCardTextureGenerated={onCardTextureGenerated}
         />
       </div>
 

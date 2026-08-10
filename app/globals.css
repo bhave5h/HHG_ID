@@ -99,14 +99,14 @@ body {
   font-family: 'Victor Mono', monospace;
 }
 
-/* User's 3D Pressable Button Component Style */
+/* User's 3D Pressable Button Component Style (Capsule/Pill Shape) */
 .btn-3d-wrapper {
   display: inline-block;
   width: 100%;
 }
 
 .btn-3d {
-  --button_radius: 0.75em;
+  --button_radius: 9999px;
   --button_color: #fee101;
   --button_outline_color: #000000;
   font-size: 15px;
@@ -129,11 +129,11 @@ body {
   box-sizing: border-box;
   border: 2.5px solid var(--button_outline_color);
   border-radius: var(--button_radius);
-  padding: 0.75em 1.5em;
+  padding: 0.85em 2em;
   background: var(--button_color);
   color: var(--button_outline_color);
   transform: translateY(-0.25em);
-  transition: transform 0.1s ease, background-color 0.15s ease;
+  transition: transform 0.1s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-3d:hover .button_top {
@@ -151,6 +151,16 @@ body {
 
 .btn-3d-pink .button_top {
   color: #ffffff;
+}
+
+.btn-3d-outline-pink {
+  --button_color: #fffbe8;
+  --button_outline_color: #ff0080;
+}
+
+.btn-3d-outline-pink .button_top {
+  color: #ff0080;
+  border-color: #ff0080;
 }
 
 .btn-3d-black {

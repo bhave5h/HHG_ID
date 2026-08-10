@@ -11,6 +11,7 @@ export default function BuilderGenerator() {
   // Photo & Transformation State
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
+  const [renderedCardDataUrl, setRenderedCardDataUrl] = useState<string | null>(null);
   const [zoom, setZoom] = useState<number>(1.0);
   const [offsetX, setOffsetX] = useState<number>(0);
   const [offsetY, setOffsetY] = useState<number>(0);
@@ -47,6 +48,7 @@ export default function BuilderGenerator() {
   const handleClearPhoto = () => {
     setPhotoFile(null);
     setPhotoPreviewUrl(null);
+    setRenderedCardDataUrl(null);
     setZoom(1);
     setOffsetX(0);
     setOffsetY(0);
@@ -76,6 +78,9 @@ export default function BuilderGenerator() {
       formData.append("zoom", zoom.toString());
       formData.append("offsetX", offsetX.toString());
       formData.append("offsetY", offsetY.toString());
+      if (renderedCardDataUrl) {
+        formData.append("cardImageDataUrl", renderedCardDataUrl);
+      }
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -111,6 +116,7 @@ export default function BuilderGenerator() {
   const handleReset = () => {
     setPhotoFile(null);
     setPhotoPreviewUrl(null);
+    setRenderedCardDataUrl(null);
     setZoom(1);
     setOffsetX(0);
     setOffsetY(0);
@@ -172,6 +178,7 @@ export default function BuilderGenerator() {
               zoom={zoom}
               offsetX={offsetX}
               offsetY={offsetY}
+              onCardTextureGenerated={setRenderedCardDataUrl}
               generatedResult={generatedResult}
               onReset={handleReset}
             />

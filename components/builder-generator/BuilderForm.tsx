@@ -65,7 +65,7 @@ export default function BuilderForm({
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Samira Hadid"
+          placeholder="e.g. Ravi Kishan"
           maxLength={30}
           required
           className="neo-input text-sm sm:text-base"
@@ -184,7 +184,7 @@ export default function BuilderForm({
       <div className="mt-1">
         <Neo3DButton
           type="submit"
-          variant="yellow"
+          variant="pink"
           disabled={isGenerating || !hasPhoto}
         >
           {isGenerating ? (

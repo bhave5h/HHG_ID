@@ -26,6 +26,7 @@ export interface LanyardCardPreviewProps {
   offsetX?: number;
   offsetY?: number;
   cardUrl?: string | null;
+  onCardTextureGenerated?: (dataUrl: string) => void;
 }
 
 export default function LanyardCardPreview({
@@ -38,6 +39,7 @@ export default function LanyardCardPreview({
   offsetX = 0,
   offsetY = 0,
   cardUrl = null,
+  onCardTextureGenerated,
 }: LanyardCardPreviewProps) {
   const [viewMode, setViewMode] = useState<"3d" | "2d">("3d");
   const [cardTextureUrl, setCardTextureUrl] = useState<string | null>(null);
@@ -49,54 +51,54 @@ export default function LanyardCardPreview({
     const displayPassNo = (passNo.trim() || "57236").toUpperCase();
 
     // -------------------------------------------------------------
-    // 1. Generate Front Card Texture
+    // 1. Generate Front Card Texture (1200 x 1800 HD)
     // -------------------------------------------------------------
     if (cardUrl) {
       setCardTextureUrl(cardUrl);
     } else {
       try {
         const canvas = document.createElement("canvas");
-        canvas.width = 800;
-        canvas.height = 1200;
+        canvas.width = 1200;
+        canvas.height = 1800;
         const ctx = canvas.getContext("2d");
         if (ctx) {
           // Background Card Shape (#1b6838 green)
           ctx.fillStyle = "#1b6838";
           ctx.beginPath();
-          ctx.roundRect(0, 0, 800, 1200, 48);
+          ctx.roundRect(0, 0, 1200, 1800, 64);
           ctx.fill();
 
           // Card outer border
           ctx.strokeStyle = "#000000";
-          ctx.lineWidth = 12;
+          ctx.lineWidth = 16;
           ctx.stroke();
 
           // Lanyard Cut-out slot at top
           ctx.fillStyle = "#000000";
           ctx.beginPath();
-          ctx.roundRect(280, 20, 240, 34, 17);
+          ctx.roundRect(480, 30, 240, 44, 22);
           ctx.fill();
 
           // Header Text "HACKER HOUSE"
           ctx.fillStyle = "#FEE101";
-          ctx.font = "900 62px Arial, sans-serif";
-          ctx.fillText("HACKER HOUSE", 50, 120);
+          ctx.font = "900 90px Arial, sans-serif";
+          ctx.fillText("HACKER HOUSE", 90, 170);
 
           // Divider Line
           ctx.strokeStyle = "rgba(254, 225, 1, 0.3)";
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 4;
           ctx.beginPath();
-          ctx.moveTo(50, 145);
-          ctx.lineTo(750, 145);
+          ctx.moveTo(90, 210);
+          ctx.lineTo(1110, 210);
           ctx.stroke();
 
           // Subheader text
           ctx.fillStyle = "#FEE101";
-          ctx.font = "900 16px Arial, sans-serif";
+          ctx.font = "900 24px Arial, sans-serif";
           ctx.textAlign = "right";
-          ctx.fillText("GOA, INDIA · 28 – 31 OCT 2026", 750, 172);
-          ctx.font = "900 13px Arial, sans-serif";
-          ctx.fillText("LESS NOISE. MORE SIGNAL", 750, 192);
+          ctx.fillText("GOA, INDIA · 28 – 31 OCT 2026", 1110, 250);
+          ctx.font = "900 20px Arial, sans-serif";
+          ctx.fillText("LESS NOISE. MORE SIGNAL", 1110, 280);
           ctx.textAlign = "left";
 
           // Asynchronously load images (logos, photo, frame overlay)
@@ -120,17 +122,17 @@ export default function LanyardCardPreview({
                 : Promise.resolve(null),
             ]);
 
-          if (goaLogo) ctx.drawImage(goaLogo, 560, 60, 190, 75);
-          if (studioLogo) ctx.drawImage(studioLogo, 50, 155, 140, 45);
+          if (goaLogo) ctx.drawImage(goaLogo, 840, 80, 270, 100);
+          if (studioLogo) ctx.drawImage(studioLogo, 90, 220, 200, 65);
 
-          // Photo Frame viewport: Square [60, 215, 680, 680]
-          const px = 60,
-            py = 215,
-            pw = 680,
-            ph = 680;
+          // Photo Frame viewport: Square [90, 320, 1020, 1020]
+          const px = 90,
+            py = 320,
+            pw = 1020,
+            ph = 1020;
           ctx.save();
           ctx.beginPath();
-          ctx.roundRect(px, py, pw, ph, 36);
+          ctx.roundRect(px, py, pw, ph, 48);
           ctx.clip();
 
           ctx.fillStyle = "#1b6838";
@@ -155,15 +157,15 @@ export default function LanyardCardPreview({
             ctx.drawImage(userPhotoImg, dx, dy, scaledW, scaledH);
           } else {
             ctx.fillStyle = "#FEE101";
-            ctx.font = "900 42px Arial, sans-serif";
+            ctx.font = "900 64px Arial, sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText("📸 BUILDER PASS", px + pw / 2, py + ph / 2 - 10);
-            ctx.font = "700 20px Arial, sans-serif";
+            ctx.fillText("📸 BUILDER PASS", px + pw / 2, py + ph / 2 - 15);
+            ctx.font = "700 30px Arial, sans-serif";
             ctx.fillStyle = "#ffffff";
             ctx.fillText(
               "Upload Photo in Panel",
               px + pw / 2,
-              py + ph / 2 + 30,
+              py + ph / 2 + 45,
             );
             ctx.textAlign = "left";
           }
@@ -175,37 +177,41 @@ export default function LanyardCardPreview({
 
           // Photo frame yellow border
           ctx.strokeStyle = "#FEE101";
-          ctx.lineWidth = 5;
+          ctx.lineWidth = 8;
           ctx.beginPath();
-          ctx.roundRect(px, py, pw, ph, 36);
+          ctx.roundRect(px, py, pw, ph, 48);
           ctx.stroke();
 
           // Bottom Details
           // Name
           ctx.fillStyle = "#FEE101";
-          ctx.font = "900 52px Arial, sans-serif";
-          ctx.fillText(displayName, 60, 965);
+          ctx.font = "900 76px Arial, sans-serif";
+          ctx.fillText(displayName, 90, 1475);
 
           // Stack / Role
-          ctx.font = "700 28px Arial, sans-serif";
-          ctx.fillText(displayStack, 60, 1015);
+          ctx.font = "700 40px Arial, sans-serif";
+          ctx.fillText(displayStack, 90, 1545);
 
           // ID Badge
           ctx.save();
           ctx.fillStyle = "#FEE101";
           ctx.beginPath();
-          ctx.roundRect(60, 1045, 230, 54, 14);
+          ctx.roundRect(90, 1585, 340, 78, 20);
           ctx.fill();
           ctx.strokeStyle = "#000000";
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 4;
           ctx.stroke();
 
           ctx.fillStyle = "#000000";
-          ctx.font = "900 22px Arial, sans-serif";
-          ctx.fillText(`NO : ${displayPassNo}`, 85, 1080);
+          ctx.font = "900 32px Arial, sans-serif";
+          ctx.fillText(`NO : ${displayPassNo}`, 130, 1638);
           ctx.restore();
 
-          setCardTextureUrl(canvas.toDataURL("image/png"));
+          const generatedDataUrl = canvas.toDataURL("image/png");
+          setCardTextureUrl(generatedDataUrl);
+          if (onCardTextureGenerated) {
+            onCardTextureGenerated(generatedDataUrl);
+          }
         }
       } catch (err) {
         console.warn("Error rendering front card texture for 3D Lanyard:", err);
@@ -221,6 +227,7 @@ export default function LanyardCardPreview({
     offsetX,
     offsetY,
     cardUrl,
+    onCardTextureGenerated,
   ]);
 
   useEffect(() => {
@@ -235,9 +242,9 @@ export default function LanyardCardPreview({
           <button
             type="button"
             onClick={() => setViewMode("3d")}
-            className={`px-3.5 py-1.5 text-xs font-bold rounded-lg border-2 border-black transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
+            className={`px-4 py-1.5 text-xs font-bold rounded-full border-2 border-black transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
               viewMode === "3d"
-                ? "bg-[#FEE101] text-black"
+                ? "bg-[#FF0080] text-white"
                 : "bg-white text-zinc-700 hover:bg-zinc-100"
             }`}
           >
@@ -246,9 +253,9 @@ export default function LanyardCardPreview({
           <button
             type="button"
             onClick={() => setViewMode("2d")}
-            className={`px-3.5 py-1.5 text-xs font-bold rounded-lg border-2 border-black transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
+            className={`px-4 py-1.5 text-xs font-bold rounded-full border-2 border-black transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
               viewMode === "2d"
-                ? "bg-[#FEE101] text-black"
+                ? "bg-[#FF0080] text-white"
                 : "bg-white text-zinc-700 hover:bg-zinc-100"
             }`}
           >

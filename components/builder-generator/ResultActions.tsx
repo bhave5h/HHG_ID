@@ -35,13 +35,13 @@ export default function ResultActions({
         </p>
       </div>
 
-      {/* Main 3D CTA Buttons */}
+      {/* Main CTA Buttons */}
       <div className="flex flex-col sm:flex-row gap-3">
         <Neo3DButton
           asAnchor
           href={cardUrl}
           download={downloadFileName}
-          variant="yellow"
+          variant="pink"
           className="flex-1"
         >
           📥 DOWNLOAD ID CARD (PNG)
@@ -52,10 +52,10 @@ export default function ResultActions({
           href={xShareUrl}
           target="_blank"
           rel="noopener noreferrer"
-          variant="pink"
+          variant="outline-pink"
           className="flex-1"
         >
-          🚀 SHARE ON X ({HASHTAG})
+          🚀 SHARE ON X ({HASHTAG}) ↗
         </Neo3DButton>
       </div>
 
@@ -67,7 +67,7 @@ export default function ResultActions({
           variant="black"
           className="flex-1"
         >
-          🔗 COPY SHARE URL
+          🔗 COPY SHARE URL ↗
         </Neo3DButton>
 
         <Neo3DButton
@@ -76,7 +76,7 @@ export default function ResultActions({
           variant="yellow"
           className="flex-1"
         >
-          ✨ CREATE ANOTHER
+          ✨ CREATE ANOTHER ↗
         </Neo3DButton>
       </div>
     </div>

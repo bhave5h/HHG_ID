@@ -135,9 +135,6 @@ export async function generateCardImage(
         </filter>
       </defs>
 
-      <!-- Outer Green Card (rounded 48px) -->
-      <rect x="0" y="0" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="64" fill="#1b6838" />
-
       <!-- LANYARD HOLE CUT-OUT ON TOP OF CARD -->
       <rect x="${(CARD_WIDTH - 240) / 2}" y="40" width="240" height="40" rx="20" fill="#000000" />
 
