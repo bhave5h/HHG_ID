@@ -124,12 +124,8 @@ export default function BuilderGenerator() {
 
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col items-center font-body">
-      {/* 1. Header Component (Date Left, logo.svg Center, Tagline Right) */}
       <HeaderBar />
-
-      {/* 2. Main Radar-Style Container Card */}
-      <div className="w-full hhg-container-radar flex flex-col gap-6">
-        {/* Headings / Task Banner Component */}
+      <div className="w-full flex flex-col gap-6">
         <TaskHeading />
 
         {errorMsg && (
@@ -163,7 +159,6 @@ export default function BuilderGenerator() {
               offsetY={offsetY}
               setOffsetY={setOffsetY}
             />
-
           </div>
 
           {/* RIGHT COLUMN: Preview Section Component */}

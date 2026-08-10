@@ -1,5 +1,5 @@
 import React from "react";
-import CardPreview from "./CardPreview";
+import LanyardCardPreview from "./LanyardCardPreview";
 import ResultActions from "./ResultActions";
 
 interface PreviewSectionProps {
@@ -41,10 +41,10 @@ export default function PreviewSection({
           <span className="font-['Imbue'] font-heading font-black text-sm uppercase text-[#0B6839]">
             LIVE ID CARD PREVIEW (2:3)
           </span>
-          <span className="neo-badge-yellow">1200 × 1800 HD</span>
+          <span className="neo-badge-yellow">3D PHYSICS & HD</span>
         </div>
 
-        <CardPreview
+        <LanyardCardPreview
           photoPreviewUrl={photoPreviewUrl}
           name={name}
           stack={stack}
@@ -53,6 +53,7 @@ export default function PreviewSection({
           zoom={zoom}
           offsetX={offsetX}
           offsetY={offsetY}
+          cardUrl={generatedResult?.cardUrl}
         />
       </div>
 

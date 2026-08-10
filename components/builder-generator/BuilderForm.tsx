@@ -1,5 +1,6 @@
 import React from "react";
 import Neo3DButton from "@/components/ui/Neo3DButton";
+import UploadZone from "./UploadZone";
 
 interface BuilderFormProps {
   name: string;
@@ -7,6 +8,11 @@ interface BuilderFormProps {
   stack: string;
   setStack: (val: string) => void;
   passNo: string;
+  onPhotoSelected: (file: File, previewUrl: string) => void;
+  selectedPreviewUrl: string | null;
+  onClearPhoto: () => void;
+  selectedFrame: string;
+  setSelectedFrame: (frame: string) => void;
   onGenerate: () => void;
   isGenerating: boolean;
   hasPhoto: boolean;
@@ -24,6 +30,11 @@ export default function BuilderForm({
   stack,
   setStack,
   passNo,
+  onPhotoSelected,
+  selectedPreviewUrl,
+  onClearPhoto,
+  selectedFrame,
+  setSelectedFrame,
   onGenerate,
   isGenerating,
   hasPhoto,
@@ -44,7 +55,7 @@ export default function BuilderForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4 font-body">
+    <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5 font-body">
       {/* 1. Name Input */}
       <div>
         <label className="block text-xs font-black uppercase tracking-wider text-black mb-1">
@@ -77,9 +88,24 @@ export default function BuilderForm({
         />
       </div>
 
+      {/* 3. FRAME & PHOTO UPLOAD (CHOOSE FRAME STYLE) BELOW ROLE/TITLE */}
+      <div>
+        <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">
+          3. FRAME & PHOTO UPLOAD <span className="text-[#FF0080]">*</span>
+        </label>
+        <UploadZone
+          onPhotoSelected={onPhotoSelected}
+          selectedPreviewUrl={selectedPreviewUrl}
+          onClearPhoto={onClearPhoto}
+          selectedFrame={selectedFrame}
+          setSelectedFrame={setSelectedFrame}
+          zoom={zoom}
+          offsetX={offsetX}
+          offsetY={offsetY}
+        />
+      </div>
 
-
-      {/* 4. SIMPLE ZOOM & POSITION CONTROLS (Only when photo is uploaded) */}
+      {/* 4. ZOOM & POSITION CONTROLS (Only when photo is uploaded) */}
       {hasPhoto && (
         <div className="p-3.5 bg-[#FFFBE8] border-2 border-black neo-card flex flex-col gap-2.5 my-1">
           <div className="flex items-center justify-between">
@@ -93,7 +119,7 @@ export default function BuilderForm({
                 setOffsetX(0);
                 setOffsetY(0);
               }}
-              className="text-[10px] font-bold text-[#FF0080] underline hover:text-black"
+              className="text-[10px] font-bold text-[#FF0080] underline hover:text-black cursor-pointer"
             >
               RESET POSITION
             </button>
@@ -115,7 +141,7 @@ export default function BuilderForm({
             />
           </div>
 
-          {/* Simple Micro Pan Buttons (Active when zoom > 1.0) */}
+          {/* Micro Pan Buttons (Active when zoom > 1.0) */}
           {zoom > 1.0 && (
             <div className="flex items-center justify-between text-[11px] font-bold text-black pt-1 border-t border-black/10">
               <span>MOVE PHOTO:</span>
@@ -123,28 +149,28 @@ export default function BuilderForm({
                 <button
                   type="button"
                   onClick={() => setOffsetX(offsetX - 15)}
-                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold"
+                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold cursor-pointer"
                 >
                   ⬅️
                 </button>
                 <button
                   type="button"
                   onClick={() => setOffsetX(offsetX + 15)}
-                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold"
+                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold cursor-pointer"
                 >
                   ➡️
                 </button>
                 <button
                   type="button"
                   onClick={() => setOffsetY(offsetY - 15)}
-                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold"
+                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold cursor-pointer"
                 >
                   ⬆️
                 </button>
                 <button
                   type="button"
                   onClick={() => setOffsetY(offsetY + 15)}
-                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold"
+                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold cursor-pointer"
                 >
                   ⬇️
                 </button>

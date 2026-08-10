@@ -52,7 +52,7 @@ export default function CardPreview({
             </h1>
             <div className="h-12 sm:h-14 w-auto flex items-center justify-end">
               <img
-                src="/assets/goa_hindi.svg"
+                src="/assets/goa.svg"
                 alt="Goa Hindi Logo"
                 className="max-h-full max-w-full object-contain"
               />

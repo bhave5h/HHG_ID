@@ -1,5 +1,4 @@
 import React from "react";
-import UploadZone from "./UploadZone";
 import BuilderForm from "./BuilderForm";
 
 interface UploadSectionProps {
@@ -46,35 +45,23 @@ export default function UploadSection({
   setOffsetY,
 }: UploadSectionProps) {
   return (
-    <div className="bg-white p-5 neo-card flex flex-col gap-5 font-body">
+    <div className="bg-[#FFFBE8] p-5 flex flex-col gap-5 font-body rounded-lg shadow-[7px_7px_0px_0px_#084e2a]">
       <h3 className="font-['Imbue'] font-heading font-black text-xl uppercase tracking-wider text-[#0B6839] border-b-2 border-black pb-2">
         BUILDER DETAILS & PHOTO
       </h3>
 
-      {/* 1. FRAME SELECTOR & IMAGE UPLOAD ON TOP INSIDE DETAILS BOX */}
-      <div>
-        <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">
-          FRAME & PHOTO UPLOAD <span className="text-[#FF0080]">*</span>
-        </label>
-        <UploadZone
-          onPhotoSelected={onPhotoSelected}
-          selectedPreviewUrl={selectedPreviewUrl}
-          onClearPhoto={onClearPhoto}
-          selectedFrame={selectedFrame}
-          setSelectedFrame={setSelectedFrame}
-          zoom={zoom}
-          offsetX={offsetX}
-          offsetY={offsetY}
-        />
-      </div>
-
-      {/* 2. INPUT FIELDS, ZOOM & POSITION CONTROLS + GENERATE BUTTON */}
+      {/* INPUT FIELDS, FRAME CHOICE, PHOTO UPLOAD, ZOOM & GENERATE BUTTON */}
       <BuilderForm
         name={name}
         setName={setName}
         stack={stack}
         setStack={setStack}
         passNo={passNo}
+        onPhotoSelected={onPhotoSelected}
+        selectedPreviewUrl={selectedPreviewUrl}
+        onClearPhoto={onClearPhoto}
+        selectedFrame={selectedFrame}
+        setSelectedFrame={setSelectedFrame}
         onGenerate={onGenerate}
         isGenerating={isGenerating}
         hasPhoto={hasPhoto}
