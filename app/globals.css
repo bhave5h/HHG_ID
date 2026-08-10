@@ -45,131 +45,143 @@ body {
 
 /* Simplified CSS Component Classes using Tailwind @apply */
 .neo-card {
-  @apply bg-white border-3 border-black shadow-[5px_5px_0px_0px_#000000] rounded-none;
+  @apply bg-[#FFFDF0] border border-[#0B6839]/20 rounded-3xl shadow-xl shadow-black/10;
 }
 
 .neo-card-yellow {
-  @apply bg-[#fee101] text-black border-3 border-black shadow-[5px_5px_0px_0px_#000000] rounded-none;
+  @apply bg-[#FEE101] text-black border border-black/10 rounded-2xl shadow-md;
 }
 
 .neo-card-pink {
-  @apply bg-[#ff0080] text-white border-3 border-black shadow-[5px_5px_0px_0px_#000000] rounded-none;
+  @apply bg-[#FF0080] text-white border border-pink-400/20 rounded-2xl shadow-md;
 }
 
 .hhg-container-radar {
-  @apply bg-[#FFFCEB] border-2 border-[#0B6839]/30 rounded-[28px] shadow-[8px_8px_0px_0px_#053B1F] p-6 sm:p-10;
+  @apply bg-[#FFFCEB] border border-[#0B6839]/20 rounded-3xl shadow-2xl p-6 sm:p-10;
 }
 
 .neo-pill-pink {
-  @apply bg-[#FF0080] text-white font-['Imbue'] font-black tracking-wider uppercase text-base sm:text-lg px-6 py-2.5 rounded-full border-2 border-black shadow-[3px_3px_0px_0px_#000000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000000] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer inline-flex items-center justify-center;
+  @apply bg-[#FF0080] text-white font-['Imbue'] font-black tracking-wider uppercase text-base sm:text-lg px-6 py-2.5 rounded-full shadow-lg hover:bg-[#E60073] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center;
 }
 
 .neo-pill-outline {
-  @apply bg-transparent text-[#FF0080] font-['Imbue'] font-black tracking-wider uppercase text-base sm:text-lg px-6 py-2.5 rounded-full border-2 border-[#FF0080] hover:bg-[#FF0080]/10 transition-all cursor-pointer inline-flex items-center justify-center;
+  @apply bg-white/80 text-[#FF0080] font-['Imbue'] font-black tracking-wider uppercase text-base sm:text-lg px-6 py-2.5 rounded-full border-2 border-[#FF0080] hover:bg-[#FF0080]/10 transition-all cursor-pointer inline-flex items-center justify-center;
 }
 
-
 .neo-btn {
-  @apply bg-[#fee101] text-black font-extrabold uppercase tracking-wider border-3 border-black shadow-[4px_4px_0px_0px_#000000] transition-all cursor-pointer inline-flex items-center justify-center hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000000] active:translate-x-0.25 active:translate-y-0.25 active:shadow-[2px_2px_0px_0px_#000000];
-  font-family: 'Victor Mono', monospace;
+  @apply bg-[#FEE101] text-black font-extrabold uppercase tracking-wider rounded-full py-2.5 px-5 border border-black/10 shadow-md transition-all cursor-pointer inline-flex items-center justify-center hover:scale-[1.02] active:scale-[0.98];
+  font-family: var(--font-victor-mono), monospace;
 }
 
 .neo-btn-pink {
-  @apply bg-[#ff0080] text-white font-extrabold uppercase tracking-wider border-3 border-black shadow-[4px_4px_0px_0px_#000000] transition-all cursor-pointer inline-flex items-center justify-center hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000000] active:translate-x-0.25 active:translate-y-0.25 active:shadow-[2px_2px_0px_0px_#000000];
-  font-family: 'Victor Mono', monospace;
+  @apply bg-[#FF0080] text-white font-extrabold uppercase tracking-wider rounded-full py-2.5 px-5 shadow-md transition-all cursor-pointer inline-flex items-center justify-center hover:bg-[#E60073] hover:scale-[1.02] active:scale-[0.98];
+  font-family: var(--font-victor-mono), monospace;
 }
 
 .neo-btn-black {
-  @apply bg-black text-white font-extrabold uppercase tracking-wider border-3 border-black shadow-[4px_4px_0px_0px_#fee101] transition-all cursor-pointer inline-flex items-center justify-center hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#fee101];
-  font-family: 'Victor Mono', monospace;
+  @apply bg-black text-white font-extrabold uppercase tracking-wider rounded-full py-2.5 px-5 shadow-md transition-all cursor-pointer inline-flex items-center justify-center hover:scale-[1.02] active:scale-[0.98];
+  font-family: var(--font-victor-mono), monospace;
 }
 
 .neo-input {
-  @apply w-full bg-white border-3 border-black p-3 font-bold text-black shadow-[3px_3px_0px_0px_#000000] rounded-none focus:outline-none focus:bg-[#fffbe8] focus:shadow-[4px_4px_0px_0px_#ff0080];
-  font-family: 'Victor Mono', monospace;
+  @apply w-fit bg-white border border-zinc-300 p-3.5 font-bold text-zinc-900 rounded-xl focus:outline-none focus:border-[#FF0080] focus:ring-2 focus:ring-[#FF0080]/20 transition-all shadow-xs;
+  font-family: var(--font-victor-mono), monospace;
 }
 
-.neo-badge-yellow {
-  @apply bg-[#fee101] text-black font-black uppercase tracking-widest text-xs px-2.5 py-1 border-2 border-black shadow-[2px_2px_0px_0px_#000000];
-  font-family: 'Victor Mono', monospace;
-}
+/* User's Custom Circle-Expand Hover Button Class */
+.custom-btn {
+  --color: #FF0080;
+  --hover-color: #D6006C;
+  --text-color: #ffffff;
+  --hover-text-color: #ffffff;
 
-.neo-badge-pink {
-  @apply bg-[#ff0080] text-white font-black uppercase tracking-widest text-xs px-2.5 py-1 border-2 border-black shadow-[2px_2px_0px_0px_#000000];
-  font-family: 'Victor Mono', monospace;
-}
-
-/* User's 3D Pressable Button Component Style (Capsule/Pill Shape) */
-.btn-3d-wrapper {
-  display: inline-block;
-  width: 100%;
-}
-
-.btn-3d {
-  --button_radius: 9999px;
-  --button_color: #fee101;
-  --button_outline_color: #000000;
-  font-size: 15px;
-  font-weight: 800;
-  font-family: 'Victor Mono', monospace;
-  border: none;
+  font-family: var(--font-victor-mono), monospace;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  border-radius: var(--button_radius);
-  background: var(--button_outline_color);
-  padding: 0;
+  z-index: 1;
+  color: var(--text-color);
+  background-color: var(--color);
+  border: 2px solid var(--color);
+  border-radius: 9999px;
+  padding: 0.7em 1.6em;
+  font-size: 14px;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   width: 100%;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: color 0.3s ease, border-color 0.3s ease, transform 0.15s ease;
+  user-select: none;
 }
 
-.btn-3d .button_top {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  border: 2.5px solid var(--button_outline_color);
-  border-radius: var(--button_radius);
-  padding: 0.85em 2em;
-  background: var(--button_color);
-  color: var(--button_outline_color);
-  transform: translateY(-0.25em);
-  transition: transform 0.1s ease, background-color 0.15s ease, color 0.15s ease;
+.custom-btn::before {
+  position: absolute;
+  content: "";
+  background: var(--hover-color);
+  width: 320px;
+  height: 320px;
+  z-index: -1;
+  border-radius: 50%;
+  top: 100%;
+  left: 100%;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-3d:hover .button_top {
-  transform: translateY(-0.38em);
+.custom-btn:hover {
+  color: var(--hover-text-color);
 }
 
-.btn-3d:active .button_top {
-  transform: translateY(0);
+.custom-btn:hover::before {
+  top: -40px;
+  left: -40px;
 }
 
-.btn-3d-pink {
-  --button_color: #ff0080;
-  --button_outline_color: #000000;
+.custom-btn:active {
+  transform: scale(0.97);
 }
 
-.btn-3d-pink .button_top {
-  color: #ffffff;
+/* Color Variants */
+.custom-btn-pink {
+  --color: #FF0080;
+  --hover-color: #C40062;
+  --text-color: #ffffff;
+  --hover-text-color: #ffffff;
 }
 
-.btn-3d-outline-pink {
-  --button_color: #fffbe8;
-  --button_outline_color: #ff0080;
+.custom-btn-outline-pink {
+  --color: #FF0080;
+  --hover-color: #FF0080;
+  --text-color: #FF0080;
+  --hover-text-color: #ffffff;
+  background-color: #ffffff;
 }
 
-.btn-3d-outline-pink .button_top {
-  color: #ff0080;
-  border-color: #ff0080;
+.custom-btn-yellow {
+  --color: #FEE101;
+  --hover-color: #000000;
+  --text-color: #000000;
+  --hover-text-color: #FEE101;
 }
 
-.btn-3d-black {
-  --button_color: #000000;
-  --button_outline_color: #fee101;
+.custom-btn-black {
+  --color: #000000;
+  --hover-color: #FEE101;
+  --text-color: #FEE101;
+  --hover-text-color: #000000;
 }
 
-.btn-3d-black .button_top {
-  color: #fee101;
+.neo-badge-yellow {
+  @apply bg-[#FEE101] text-black font-extrabold uppercase tracking-widest text-xs px-3 py-1 rounded-full border border-black/10 shadow-xs;
+  font-family: var(--font-victor-mono), monospace;
+}
+
+.neo-badge-pink {
+  @apply px-5 py-2 text-xs text-white font-extrabold uppercase tracking-widest rounded-full shadow-xs;
+  font-family: var(--font-victor-mono), monospace;
 }
 
 

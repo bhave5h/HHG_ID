@@ -39,12 +39,7 @@ export default function PreviewSection({
     <div className="flex flex-col items-center gap-6 font-body w-full">
       {/* Live ID Card Preview */}
       <div className="w-full">
-        <div className="w-full mb-2 flex items-center justify-between">
-          <span className="font-['Imbue'] font-heading font-black text-sm uppercase text-[#0B6839]">
-            LIVE ID CARD PREVIEW (2:3)
-          </span>
-          <span className="neo-badge-yellow">3D PHYSICS & HD</span>
-        </div>
+
 
         <LanyardCardPreview
           photoPreviewUrl={photoPreviewUrl}

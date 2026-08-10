@@ -1,6 +1,7 @@
 import React from "react";
 import Neo3DButton from "@/components/ui/Neo3DButton";
 import UploadZone from "./UploadZone";
+import FrameSelector from "./FrameSelector";
 
 interface BuilderFormProps {
   name: string;
@@ -55,10 +56,13 @@ export default function BuilderForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5 font-body">
+    <form
+      onSubmit={handleSubmit}
+      className="w-full flex flex-col gap-5 font-body"
+    >
       {/* 1. Name Input */}
       <div>
-        <label className="block text-xs font-black uppercase tracking-wider text-black mb-1">
+        <label className="block text-l font-black uppercase tracking-wider text-black mb-1">
           1. YOUR NAME <span className="text-[#FF0080]">*</span>
         </label>
         <input
@@ -74,7 +78,7 @@ export default function BuilderForm({
 
       {/* 2. Stack / Role Input */}
       <div>
-        <label className="block text-xs font-black uppercase tracking-wider text-black mb-1">
+        <label className="block text-l font-black uppercase tracking-wider text-black mb-1">
           2. ROLE / TITLE <span className="text-[#FF0080]">*</span>
         </label>
         <input
@@ -88,28 +92,38 @@ export default function BuilderForm({
         />
       </div>
 
-      {/* 3. FRAME & PHOTO UPLOAD (CHOOSE FRAME STYLE) BELOW ROLE/TITLE */}
+      {/* 3. PHOTO UPLOAD */}
       <div>
-        <label className="block text-xs font-black uppercase tracking-wider text-black mb-2">
-          3. FRAME & PHOTO UPLOAD <span className="text-[#FF0080]">*</span>
+        <label className="block text-l font-black uppercase tracking-wider text-black mb-2 font-body">
+          3. PHOTO UPLOAD <span className="text-[#FF0080]">*</span>
         </label>
         <UploadZone
           onPhotoSelected={onPhotoSelected}
           selectedPreviewUrl={selectedPreviewUrl}
           onClearPhoto={onClearPhoto}
           selectedFrame={selectedFrame}
-          setSelectedFrame={setSelectedFrame}
           zoom={zoom}
           offsetX={offsetX}
           offsetY={offsetY}
         />
       </div>
 
-      {/* 4. ZOOM & POSITION CONTROLS (Only when photo is uploaded) */}
+      {/* 4. SELECT FRAME */}
+      <div>
+        <label className="block text-l font-black uppercase tracking-wider text-black mb-2 font-body">
+          4. SELECT FRAME <span className="text-[#FF0080]">*</span>
+        </label>
+        <FrameSelector
+          selectedFrame={selectedFrame}
+          setSelectedFrame={setSelectedFrame}
+        />
+      </div>
+
+      {/* ZOOM & POSITION CONTROLS (Only when photo is uploaded) */}
       {hasPhoto && (
-        <div className="p-3.5 bg-[#FFFBE8] border-2 border-black neo-card flex flex-col gap-2.5 my-1">
+        <div className="p-4 bg-white/80 border border-[#0B6839]/15 rounded-2xl flex flex-col gap-2.5 my-1 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+            <span className="text-xs font-black uppercase tracking-wider text-[#0B6839] flex items-center gap-1.5">
               🔍 ZOOM & ADJUST PHOTO
             </span>
             <button
@@ -119,7 +133,7 @@ export default function BuilderForm({
                 setOffsetX(0);
                 setOffsetY(0);
               }}
-              className="text-[10px] font-bold text-[#FF0080] underline hover:text-black cursor-pointer"
+              className="text-[10px] font-bold text-[#FF0080] hover:underline cursor-pointer"
             >
               RESET POSITION
             </button>
@@ -127,7 +141,7 @@ export default function BuilderForm({
 
           {/* Zoom Slider */}
           <div className="flex items-center gap-3">
-            <span className="text-[11px] font-bold text-black min-w-12">
+            <span className="text-[11px] font-bold text-zinc-800 min-w-12">
               {zoom.toFixed(1)}x
             </span>
             <input
@@ -137,40 +151,40 @@ export default function BuilderForm({
               step="0.05"
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="w-full accent-[#FF0080] cursor-pointer h-2 bg-white rounded-lg border border-black"
+              className="w-full accent-[#FF0080] cursor-pointer h-2 bg-zinc-200 rounded-lg"
             />
           </div>
 
           {/* Micro Pan Buttons (Active when zoom > 1.0) */}
           {zoom > 1.0 && (
-            <div className="flex items-center justify-between text-[11px] font-bold text-black pt-1 border-t border-black/10">
+            <div className="flex items-center justify-between text-[11px] font-bold text-zinc-800 pt-2 border-t border-zinc-200">
               <span>MOVE PHOTO:</span>
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 <button
                   type="button"
                   onClick={() => setOffsetX(offsetX - 15)}
-                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold cursor-pointer"
+                  className="bg-white border border-zinc-300 rounded-full px-2.5 py-1 hover:bg-[#FEE101] text-xs font-bold cursor-pointer shadow-xs"
                 >
                   ⬅️
                 </button>
                 <button
                   type="button"
                   onClick={() => setOffsetX(offsetX + 15)}
-                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold cursor-pointer"
+                  className="bg-white border border-zinc-300 rounded-full px-2.5 py-1 hover:bg-[#FEE101] text-xs font-bold cursor-pointer shadow-xs"
                 >
                   ➡️
                 </button>
                 <button
                   type="button"
                   onClick={() => setOffsetY(offsetY - 15)}
-                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold cursor-pointer"
+                  className="bg-white border border-zinc-300 rounded-full px-2.5 py-1 hover:bg-[#FEE101] text-xs font-bold cursor-pointer shadow-xs"
                 >
                   ⬆️
                 </button>
                 <button
                   type="button"
                   onClick={() => setOffsetY(offsetY + 15)}
-                  className="bg-white border border-black px-2 py-0.5 hover:bg-[#FEE101] text-xs font-bold cursor-pointer"
+                  className="bg-white border border-zinc-300 rounded-full px-2.5 py-1 hover:bg-[#FEE101] text-xs font-bold cursor-pointer shadow-xs"
                 >
                   ⬇️
                 </button>
@@ -189,9 +203,24 @@ export default function BuilderForm({
         >
           {isGenerating ? (
             <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-5 w-5 text-black" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <svg
+                className="animate-spin h-5 w-5 text-black"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
               GENERATING BUILDER PASS...
             </span>

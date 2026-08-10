@@ -2,28 +2,25 @@
 
 import React, { useState, useRef } from "react";
 import { convertHeicToJpegIfNeeded } from "@/lib/image/heic";
-import FrameSelector from "./FrameSelector";
 
 interface UploadZoneProps {
   onPhotoSelected: (file: File, previewUrl: string) => void;
   selectedPreviewUrl: string | null;
   onClearPhoto: () => void;
-  selectedFrame: string;
-  setSelectedFrame: (frame: string) => void;
-  zoom: number;
-  offsetX: number;
-  offsetY: number;
+  selectedFrame?: string;
+  zoom?: number;
+  offsetX?: number;
+  offsetY?: number;
 }
 
 export default function UploadZone({
   onPhotoSelected,
   selectedPreviewUrl,
   onClearPhoto,
-  selectedFrame,
-  setSelectedFrame,
-  zoom,
-  offsetX,
-  offsetY,
+  selectedFrame = "frame1.png",
+  zoom = 1,
+  offsetX = 0,
+  offsetY = 0,
 }: UploadZoneProps) {
   const [isConverting, setIsConverting] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -80,7 +77,7 @@ export default function UploadZone({
   const activePanY = zoom > 1.0 ? offsetY : 0;
 
   return (
-    <div className="w-full font-body flex flex-col gap-4">
+    <div className="w-full font-body flex flex-col gap-3">
       <input
         ref={fileInputRef}
         type="file"
@@ -89,16 +86,10 @@ export default function UploadZone({
         onChange={(e) => handleFiles(e.target.files)}
       />
 
-      {/* Frame Choice Selector Component */}
-      <FrameSelector
-        selectedFrame={selectedFrame}
-        setSelectedFrame={setSelectedFrame}
-      />
-
       {selectedPreviewUrl ? (
-        <div className="flex flex-col gap-3">
-          {/* Photo Viewport Container — True to Size 1:1 Square */}
-          <div className="relative w-full aspect-square neo-card bg-[#1b6838] border-3 border-black overflow-hidden flex items-center justify-center select-none">
+        <div className="flex flex-col gap-3 max-w-[220px] sm:max-w-[250px] w-full">
+          {/* Photo Viewport Container — Compact 1:1 Square */}
+          <div className="w-full max-w-[220px] sm:max-w-[250px] aspect-square cursor-pointer text-center bg-[#FFFDF0] border-1 rounded-2xl relative overflow-hidden flex items-center justify-cente">
             <div
               className="w-full h-full flex items-center justify-center transition-transform duration-75"
               style={{
@@ -113,64 +104,56 @@ export default function UploadZone({
             </div>
 
             {/* Selected Frame Overlay */}
-            <img
-              src={`/assets/${selectedFrame}`}
-              alt="Frame Overlay"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"
-            />
           </div>
 
           {/* TWO BUTTONS DIRECTLY BELOW THE IMAGE */}
-          <div className="flex gap-2.5">
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="neo-btn flex-1 py-2 text-xs font-black text-black"
+              className="custom-btn custom-btn-outline-pink flex-1 py-2 text-xs"
             >
-              🔄 CHANGE PHOTO
+              CHANGE
             </button>
 
             <button
               type="button"
               onClick={onClearPhoto}
-              className="neo-btn-pink flex-1 py-2 text-xs font-black text-white"
+              className="custom-btn custom-btn-pink flex-1 py-2 text-xs"
             >
-              ❌ REMOVE
+              REMOVE
             </button>
           </div>
         </div>
       ) : (
-        /* Clean 1:1 Upload Placeholder */
+        /* Compact Mobile-Friendly Dropzone with Grid Pattern */
         <div
           onDragEnter={handleDrag}
           onDragOver={handleDrag}
           onDragLeave={handleDrag}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`w-full aspect-square neo-card cursor-pointer text-center bg-[#FFFDF0] hover:bg-[#FFF8D6] transition-colors border-2 border-dashed border-[#0B6839]/40 relative overflow-hidden flex items-center justify-center ${
-            dragActive ? "scale-[0.99] border-[#FF0080] bg-[#FFF8D6]" : ""
+          className={`w-full max-w-[200px] sm:max-w-[250px] aspect-square cursor-pointer text-center bg-[#FFFDF0] border-1 rounded-2xl relative overflow-hidden flex items-center justify-center ${
+            dragActive ? "scale-[0.98] border-[#FF0080] bg-[#FFF8D6]" : ""
           }`}
         >
-          {/* Selected Frame Preview Overlay */}
-          <img
-            src={`/assets/${selectedFrame}`}
-            alt="Frame Overlay Preview"
-            className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-40 z-0"
-          />
-
-          <div className="relative z-10 flex flex-col items-center justify-center gap-2 p-4">
-            <div className="w-12 h-12 rounded-full bg-[#FEE101] border-2 border-black flex items-center justify-center text-xl shadow-[2px_2px_0px_0px_#000]">
-              📸
+          {/* User's Grid & Pattern Layout Structure */}
+          <div className="relative w-full h-full grid grid-cols-[1fr_1rem_auto_1rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr] [--pattern-fg:rgba(0,0,0,0.12)]">
+            <div className="col-start-3 row-start-3 flex max-w-lg flex-col relative items-center justify-center p-3">
+              <span className="font-['Imbue'] font-heading font-black text-xl sm:text-2xl tracking-wider text-[#0B6839] uppercase leading-none mb-1">
+                {isConverting ? "PROCESSING HEIC..." : "CLICK TO UPLOAD"}
+              </span>
             </div>
-            <span className="font-['Imbue'] font-heading font-black text-2xl tracking-wider text-[#0B6839] uppercase">
-              {isConverting ? "PROCESSING HEIC PHOTO..." : "CLICK TO UPLOAD PHOTO"}
-            </span>
-            <span className="font-body text-xs font-bold text-zinc-700 bg-white/80 px-2 py-0.5 rounded">
-              Drag & drop photo or click to browse (JPG, PNG, HEIC)
-            </span>
+
+            <div className="-right-px col-start-2 row-span-full row-start-1 border-x border-black/10 bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed" />
+            <div className="relative -left-px col-start-4 row-span-full row-start-1 border-x border-black/10 bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed" />
+            <div className="relative -bottom-px col-span-full col-start-1 row-start-2 border-t border-black/10 border-dashed" />
+            <div className="relative -top-px col-span-full col-start-1 row-start-4 border-b border-black/10 border-dashed" />
           </div>
         </div>
       )}
     </div>
   );
 }
+
+

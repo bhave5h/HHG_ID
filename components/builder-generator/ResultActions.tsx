@@ -29,7 +29,7 @@ export default function ResultActions({
 
   return (
     <div className="w-full flex flex-col gap-4 font-body">
-      <div className="neo-card-yellow p-3 text-center">
+      <div className="bg-[#FEE101] p-3.5 text-center rounded-2xl border border-black/10 shadow-sm">
         <p className="text-xs font-black uppercase tracking-wider text-black">
           🎉 YOUR HH GOA 2026 BUILDER PASS IS READY!
         </p>

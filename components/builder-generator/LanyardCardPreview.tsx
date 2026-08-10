@@ -235,40 +235,37 @@ export default function LanyardCardPreview({
   }, [updateCardTexture]);
 
   return (
-    <div className="w-full flex flex-col gap-3 font-body">
+    <div className="bg-[#FFFBE8] p-5 flex flex-col gap-5 font-body rounded-lg shadow-[7px_7px_0px_0px_#084e2a]">
       {/* Mode Switcher Header */}
-      <div className="flex items-center justify-between bg-black/5 p-1.5 rounded-xl border border-black/10">
+      <div className="flex items-center justify-between bg-white/10 backdrop-blur-md p-1.5 rounded-full border border-white/15">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setViewMode("3d")}
-            className={`px-4 py-1.5 text-xs font-bold rounded-full border-2 border-black transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
+            className={`custom-btn text-xs py-1.5 px-4 ${
               viewMode === "3d"
-                ? "bg-[#FF0080] text-white"
-                : "bg-white text-zinc-700 hover:bg-zinc-100"
+                ? "custom-btn-pink"
+                : "custom-btn-outline-pink"
             }`}
           >
-            🎮 3D Lanyard Badge
+           3D ID card 
           </button>
           <button
             type="button"
             onClick={() => setViewMode("2d")}
-            className={`px-4 py-1.5 text-xs font-bold rounded-full border-2 border-black transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
+            className={`custom-btn text-xs py-1.5 px-4 ${
               viewMode === "2d"
-                ? "bg-[#FF0080] text-white"
-                : "bg-white text-zinc-700 hover:bg-zinc-100"
+                ? "custom-btn-pink"
+                : "custom-btn-outline-pink"
             }`}
           >
-            🖼️ 2D Card Preview
+            2D Id Card
           </button>
         </div>
-        <span className="text-[11px] font-bold text-zinc-600 hidden sm:inline">
-          {viewMode === "3d" ? "Interactive Drag & Physics" : "Flat HD View"}
-        </span>
       </div>
 
       {/* Main Container */}
-      <div className="relative w-full rounded-2xl bg-zinc-950 border-4 border-black overflow-hidden shadow-[8px_8px_0px_0px_#000]">
+      <div className="relative w-full rounded-3xl bg-zinc-950 border border-white/10 overflow-hidden shadow-2xl shadow-black/40">
         {viewMode === "3d" ? (
           <div className="relative w-full h-[540px] sm:h-[620px] flex items-center justify-center bg-gradient-to-b from-zinc-900 via-zinc-900 to-black">
             <Lanyard

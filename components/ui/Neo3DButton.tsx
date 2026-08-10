@@ -28,12 +28,12 @@ export default function Neo3DButton({
 }: Neo3DButtonProps) {
   const variantClass =
     variant === "pink"
-      ? "btn-3d-pink"
+      ? "custom-btn-pink"
       : variant === "black"
-      ? "btn-3d-black"
+      ? "custom-btn-black"
       : variant === "outline-pink"
-      ? "btn-3d-outline-pink"
-      : "";
+      ? "custom-btn-outline-pink"
+      : "custom-btn-yellow";
 
   if (asAnchor && href) {
     return (
@@ -42,30 +42,33 @@ export default function Neo3DButton({
         download={download}
         target={target}
         rel={rel}
-        className={cn("btn-3d-wrapper no-underline", className)}
+        className={cn("no-underline block w-full", className)}
       >
-        <button type="button" className={cn("btn-3d", variantClass)}>
-          <span className="button_top">{children}</span>
+        <button
+          type="button"
+          className={cn("custom-btn", variantClass, "w-full")}
+        >
+          {children}
         </button>
       </a>
     );
   }
 
   return (
-    <div className={cn("btn-3d-wrapper", className)}>
-      <button
-        type={type}
-        disabled={disabled}
-        onClick={onClick}
-        className={cn(
-          "btn-3d",
-          variantClass,
-          disabled && "opacity-60 cursor-not-allowed pointer-events-none"
-        )}
-        {...props}
-      >
-        <span className="button_top">{children}</span>
-      </button>
-    </div>
+    <button
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        "custom-btn",
+        variantClass,
+        "w-full",
+        disabled && "opacity-60 cursor-not-allowed pointer-events-none",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
   );
 }

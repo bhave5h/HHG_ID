@@ -34,9 +34,9 @@ export default function CardPreview({
   const frameSrc = `/assets/${selectedFrame || "frame1.png"}`;
 
   return (
-    <div className="w-full neo-card p-3.5 bg-white shadow-[8px_8px_0px_0px_#000] font-body relative select-none pointer-events-none">
+    <div className="w-full p-4 bg-[#FFFDF0] rounded-3xl border border-[#0B6839]/20 shadow-xl shadow-black/15 font-body relative select-none pointer-events-none">
       {/* 2:3 Aspect Ratio Card Frame */}
-      <div className="relative w-full aspect-[2/3] bg-[#1b6838] border-4 border-black p-4 sm:p-5 flex flex-col justify-between overflow-hidden shadow-[4px_4px_0px_0px_#000] rounded-[32px]">
+      <div className="relative w-full aspect-[2/3] bg-[#1b6838] border-2 border-black/80 p-4 sm:p-5 flex flex-col justify-between overflow-hidden shadow-2xl rounded-[32px]">
         
         {/* 1. LANYARD HOLE CUT-OUT ON TOP OF CARD */}
         <div className="relative z-20 w-full flex justify-center pt-0.5 mb-2">
