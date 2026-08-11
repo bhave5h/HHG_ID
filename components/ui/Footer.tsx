@@ -5,7 +5,7 @@ import { SITE_LINKS } from "@/lib/constants";
 
 export default function Footer() {
   return (
-    <footer className="w-full mt-6 pt-3 border-t-2 border-white/30 text-center font-body">
+    <footer className="w-full mt-auto pt-4 pb-2 border-t-2 border-white/30 text-center font-body">
       <div className="flex flex-wrap justify-center gap-4 mb-2 text-l">
         <a
           href={SITE_LINKS.officialWebsite}

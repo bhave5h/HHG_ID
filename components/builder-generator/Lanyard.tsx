@@ -162,6 +162,35 @@ export default function Lanyard({
   );
 }
 
+function useSafeTextureImage(src: string | null) {
+  const [imgElement, setImgElement] = useState<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    if (!src || src === BLANK_PIXEL) {
+      setImgElement(null);
+      return;
+    }
+
+    let isMounted = true;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      if (isMounted) setImgElement(img);
+    };
+    img.onerror = () => {
+      console.warn("Could not load 3D card texture from:", src);
+      if (isMounted) setImgElement(null);
+    };
+    img.src = src;
+
+    return () => {
+      isMounted = false;
+    };
+  }, [src]);
+
+  return imgElement;
+}
+
 interface BandProps {
   maxSpeed?: number;
   minSpeed?: number;
@@ -209,16 +238,13 @@ function Band({
   const { nodes, materials } = useGLTF(glbSrc) as any;
   const texture = useTexture(lanyardSrc) as THREE.Texture;
 
-  // useTexture must be called unconditionally; use a blank pixel when an image
-  // isn't supplied for a given face, then skip compositing it below.
-  const frontTex = useTexture(frontImage || BLANK_PIXEL) as THREE.Texture;
-  const backTex = useTexture(backImage || BLANK_PIXEL) as THREE.Texture;
+  const frontImgObj = useSafeTextureImage(frontImage);
+  const backImgObj = useSafeTextureImage(backImage);
 
-  // Composite the front/back images into the card's texture atlas (front = left
-  // half, back = right half). Each image is drawn aspect-preserving (no stretch).
+  // Composite the front/back images into the card's texture atlas
   const cardMap = useMemo(() => {
     const baseMap = materials.base.map;
-    if (!frontImage && !backImage) return baseMap;
+    if (!frontImgObj && !backImgObj) return baseMap;
 
     const baseImg = baseMap.image;
     if (!baseImg) return baseMap;
@@ -231,7 +257,6 @@ function Band({
     const ctx = canvas.getContext("2d");
     if (!ctx) return baseMap;
 
-    // Keep the original baked atlas for the card edges and any untouched face.
     ctx.drawImage(baseImg, 0, 0, W, H);
 
     const drawFitted = (
@@ -258,10 +283,8 @@ function Band({
       ctx.restore();
     };
 
-    if (frontImage && frontTex.image)
-      drawFitted(frontTex.image as any, FRONT_UV_RECT);
-    if (backImage && backTex.image)
-      drawFitted(backTex.image as any, BACK_UV_RECT);
+    if (frontImgObj) drawFitted(frontImgObj, FRONT_UV_RECT);
+    if (backImgObj) drawFitted(backImgObj, BACK_UV_RECT);
 
     const composite = new THREE.CanvasTexture(canvas);
     composite.colorSpace = THREE.SRGBColorSpace;
@@ -269,7 +292,7 @@ function Band({
     composite.anisotropy = 16;
     composite.needsUpdate = true;
     return composite;
-  }, [frontImage, backImage, imageFit, frontTex, backTex, materials.base.map]);
+  }, [frontImage, backImage, frontImgObj, backImgObj, imageFit, materials.base.map]);
 
   const resolutionVector = useMemo(
     () => new THREE.Vector2(1000, isMobile ? 2000 : 1000),

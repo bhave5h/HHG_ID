@@ -165,7 +165,7 @@ export default function BuilderGenerator() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col items-center font-body">
+    <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col justify-between items-center font-body">
       <HeaderBar />
       <div className="w-full flex flex-col gap-6">
         <TaskHeading />
@@ -211,17 +211,17 @@ export default function BuilderGenerator() {
           <div className="md:col-span-6 flex flex-col items-center w-full ">
             <PreviewSection
               photoPreviewUrl={photoPreviewUrl}
-              name={committedName}
-              stack={committedStack}
-              qrUrl={committedQrUrl}
+              name={draftName || committedName}
+              stack={draftStack || committedStack}
+              qrUrl={draftQrUrl || committedQrUrl}
               photoFilter={photoFilter}
               passNo={passNo}
               selectedFrame={selectedFrame}
-              zoom={committedZoom}
+              zoom={draftZoom}
               setZoom={setDraftZoom}
-              offsetX={committedOffsetX}
+              offsetX={draftOffsetX}
               setOffsetX={setDraftOffsetX}
-              offsetY={committedOffsetY}
+              offsetY={draftOffsetY}
               setOffsetY={setDraftOffsetY}
               onCardTextureGenerated={setRenderedCardDataUrl}
               generatedResult={generatedResult}
