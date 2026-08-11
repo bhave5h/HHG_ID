@@ -73,18 +73,17 @@ export default async function CardSharePage({ params }: Props) {
         <div className="w-full flex flex-col items-center gap-2 my-2">
           {/* Call To Action Box */}
           <div className="w-full max-w-md sm:max-w-lg z-50 p-3.5 sm:p-4 text-center bg-[#FFFBE8] rounded-lg shadow-[5px_5px_0px_0px_#084e2a]">
-            <h3 className="text-base font-heading sm:text-2xl font-black uppercase mb-1">
-              Want Your Own Builder Pass?
+            <h3 className="font-heading sm:text-3xl font-bold text-[#0B6839] uppercase mb-1">
+              Want Your Own ID Card ?
             </h3>
-            <p className="text-[11px] sm:text-xs font-bold text-black/80 mb-2.5">
-              Upload your photo, set your title, and join 500+ elite builders at
-              HH Goa 2026.
+            <p className="text-[11px] sm:text-s font-bold text-[#0B6839] mb-2.5 max-w-[300px] mx-auto">
+              Upload your photo, set your title, and join 500+ elite builders at HH Goa 2026.
             </p>
             <Link
               href="/"
-              className="neo-btn-black px-4 py-2 text-xs font-black tracking-wider inline-block transition-transform hover:scale-[1.02]"
+              className="bg-[#FF0080] rounded-full px-4 py-2 text-lg font-heading font-bold text-white tracking-wider inline-block hover:underline"
             >
-              ⚡ CREATE YOUR BUILDER PASS NOW
+              CREATE YOUR OWN ID PASS ↗
             </Link>
           </div>
 

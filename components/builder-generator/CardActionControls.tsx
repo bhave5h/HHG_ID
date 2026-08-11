@@ -27,25 +27,25 @@ export default function CardActionControls({
         <button
           type="button"
           onClick={() => setViewMode("3d")}
-          className={`flex-1 py-2.5 px-2 text-[10px] sm:text-xs font-black uppercase tracking-wider rounded-full transition-all cursor-pointer inline-flex items-center justify-center border-2 border-[#FF0080] ${
+          className={`btn-pink ${
             viewMode === "3d"
-              ? "bg-[#FF0080] text-white shadow-md"
-              : "bg-white/90 text-[#FF0080] hover:bg-[#FF0080] hover:text-white"
+              ? "btn-pink"
+              : "btn-pink"
           }`}
         >
-          🎛️ 3D LANYARD VIEW
+          3D ID Card
         </button>
 
         <button
           type="button"
           onClick={() => setViewMode("2d")}
-          className={`flex-1 py-2.5 px-2 text-[10px] sm:text-xs font-black uppercase tracking-wider rounded-full transition-all cursor-pointer inline-flex items-center justify-center border-2 border-[#FF0080] ${
+          className={`btn-pink ${
             viewMode === "2d"
-              ? "bg-[#FF0080] text-white shadow-md"
-              : "bg-white/90 text-[#FF0080] hover:bg-[#FF0080] hover:text-white"
+              ? "btn-pink"
+              : "btn-pink"
           }`}
         >
-          🖼️ 2D CARD VIEW
+          2D ID Card
         </button>
       </div>
 
@@ -54,18 +54,18 @@ export default function CardActionControls({
         <a
           href={cardImageUrl}
           download={downloadFileName}
-          className="flex-1 w-full py-1.5 sm:py-2.5 px-2 sm:px-3 text-center text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#FF0080] bg-white/90 border-2 border-[#FF0080] rounded-full hover:bg-[#FF0080] hover:text-white transition-all cursor-pointer inline-flex items-center justify-center"
+          className="btn-pink"
         >
-          📥 DOWNLOAD PASS
+          DOWNLOAD PASS
         </a>
 
         <a
           href={xShareUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 w-full py-1.5 sm:py-2.5 px-2 sm:px-3 text-center text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#FF0080] bg-white/90 border-2 border-[#FF0080] rounded-full hover:bg-[#FF0080] hover:text-white transition-all cursor-pointer inline-flex items-center justify-center"
+          className="btn-pink"
         >
-          🚀 SHARE ON X
+          SHARE ON X
         </a>
       </div>
     </div>
