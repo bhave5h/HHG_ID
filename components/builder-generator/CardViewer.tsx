@@ -31,7 +31,7 @@ export default function CardViewer({
   return (
     <div className="w-full max-w-lg flex flex-col items-center font-body">
       {/* Main Preview Container (Shifted up ~15% with -translate-y-6 / -mt-4) */}
-      <div className="w-full h-[416px] sm:h-[480px] relative flex items-center justify-center overflow-hidden z-0 -translate-y-5 sm:-translate-y-6 -mb-4">
+      <div className="w-full h-[416px] sm:h-[480px] relative flex items-center justify-center z-0 -translate-y-5 sm:-translate-y-6 lg:-translate-y-6 mb-10 pb-10 sm:pb-20 md:pb-16 lg:pb-12">
         <AnimatePresence mode="wait">
           {viewMode === "3d" ? (
             <motion.div
@@ -43,8 +43,8 @@ export default function CardViewer({
               className="w-full h-full"
             >
               <Lanyard
-                position={[0, 0.8, 13]}
-                fov={23}
+                position={[0, 0.8, 11.7]}
+                fov={21}
                 gravity={[0, -40, 0]}
                 frontImage={cardImageUrl}
                 backImage="/assets/lanyard/ID_back.png"
@@ -76,7 +76,7 @@ export default function CardViewer({
         </AnimatePresence>
       </div>
 
-      {/* Grouped Action Controls (3D, 2D, Download, Share on X) */}
+      {/* Grouped Action Controls (3D, 2D, Download, Share on X + CTA) */}
       <CardActionControls
         viewMode={viewMode}
         setViewMode={setViewMode}

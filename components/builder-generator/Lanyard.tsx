@@ -111,11 +111,10 @@ export default function Lanyard({
         }
       >
         <React.Suspense fallback={null}>
-          {/* Bright vibrant studio lighting setup */}
-          <ambientLight intensity={Math.PI * 1.6} />
-          <directionalLight position={[5, 10, 8]} intensity={2.2} />
-          <directionalLight position={[-5, 5, 5]} intensity={1.2} />
-          <directionalLight position={[0, -5, 5]} intensity={0.8} />
+          {/* Neutral studio lighting setup */}
+          <ambientLight intensity={Math.PI * 1} />
+          <directionalLight position={[5, 8, 8]} intensity={1.4} />
+          <directionalLight position={[-5, -5, -5]} intensity={0.6} />
 
           <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
             <Band
@@ -129,28 +128,28 @@ export default function Lanyard({
           </Physics>
           <Environment blur={0.75}>
             <Lightformer
-              intensity={4}
+              intensity={2}
               color="white"
               position={[0, -1, 5]}
               rotation={[0, 0, Math.PI / 3]}
               scale={[100, 0.1, 1]}
             />
             <Lightformer
-              intensity={4.5}
+              intensity={2.5}
               color="white"
               position={[-1, -1, 1]}
               rotation={[0, 0, Math.PI / 3]}
               scale={[100, 0.1, 1]}
             />
             <Lightformer
-              intensity={4.5}
+              intensity={2.5}
               color="white"
               position={[1, 1, 1]}
               rotation={[0, 0, Math.PI / 3]}
               scale={[100, 0.1, 1]}
             />
             <Lightformer
-              intensity={8}
+              intensity={5}
               color="white"
               position={[-10, 0, 14]}
               rotation={[0, Math.PI / 2, Math.PI / 3]}
