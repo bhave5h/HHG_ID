@@ -7,10 +7,14 @@ interface UploadSectionProps {
   onClearPhoto: () => void;
   selectedFrame: string;
   setSelectedFrame: (frame: string) => void;
+  photoFilter: string;
+  setPhotoFilter: (filter: string) => void;
   name: string;
   setName: (val: string) => void;
   stack: string;
   setStack: (val: string) => void;
+  qrUrl: string;
+  setQrUrl: (val: string) => void;
   passNo: string;
   onGenerate: () => void;
   isGenerating: boolean;
@@ -29,10 +33,14 @@ export default function UploadSection({
   onClearPhoto,
   selectedFrame,
   setSelectedFrame,
+  photoFilter,
+  setPhotoFilter,
   name,
   setName,
   stack,
   setStack,
+  qrUrl,
+  setQrUrl,
   passNo,
   onGenerate,
   isGenerating,
@@ -45,8 +53,8 @@ export default function UploadSection({
   setOffsetY,
 }: UploadSectionProps) {
   return (
-    <div className="p-5 flex flex-col gap-5 font-body bg-[#FFFBE8] rounded-lg shadow-[7px_7px_0px_0px_#084e2a]">
-      <h3 className="font-['Imbue'] font-heading font-black text-2xl uppercase tracking-wider text-[#0B6839] border-b border-[#0B6839]/20 pb-3">
+    <div className="p-3.5 sm:p-4 flex flex-col gap-3.5 font-body bg-[#FFFBE8] rounded-lg shadow-[5px_5px_0px_0px_#084e2a]">
+      <h3 className="font-['Imbue'] font-heading font-black text-base sm:text-lg uppercase tracking-wider text-[#0B6839] border-b border-[#0B6839]/20 pb-2">
         ADD YOUR DETAILS & PHOTO
       </h3>
 
@@ -56,12 +64,16 @@ export default function UploadSection({
         setName={setName}
         stack={stack}
         setStack={setStack}
+        qrUrl={qrUrl}
+        setQrUrl={setQrUrl}
         passNo={passNo}
         onPhotoSelected={onPhotoSelected}
         selectedPreviewUrl={selectedPreviewUrl}
         onClearPhoto={onClearPhoto}
         selectedFrame={selectedFrame}
         setSelectedFrame={setSelectedFrame}
+        photoFilter={photoFilter}
+        setPhotoFilter={setPhotoFilter}
         onGenerate={onGenerate}
         isGenerating={isGenerating}
         hasPhoto={hasPhoto}
@@ -75,3 +87,5 @@ export default function UploadSection({
     </div>
   );
 }
+
+

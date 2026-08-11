@@ -1,6 +1,7 @@
 import sharp, { OverlayOptions } from "sharp";
 import fs from "fs";
 import path from "path";
+import { generateQRSvgMarkup } from "@/lib/qr";
 
 export interface CardGenerationOptions {
   userPhotoBuffer: Buffer;
@@ -9,6 +10,8 @@ export interface CardGenerationOptions {
   builderTitle?: string;
   passNo?: string;
   selectedFrame?: string;
+  qrUrl?: string;
+  photoFilter?: string;
   zoom?: number;
   offsetX?: number;
   offsetY?: number;
@@ -32,6 +35,8 @@ export async function generateCardImage(
     stack,
     passNo = "57236",
     selectedFrame = "frame1.png",
+    qrUrl = "https://github.com",
+    photoFilter = "none",
     zoom = 1.0,
     offsetX = 0,
     offsetY = 0,
@@ -66,9 +71,16 @@ export async function generateCardImage(
     const scaledW = Math.round(origW * totalScale);
     const scaledH = Math.round(origH * totalScale);
 
-    const resizedBuffer = await basePhoto
-      .resize(scaledW, scaledH, { fit: "cover" })
-      .toBuffer();
+    let resizedPhoto = basePhoto.resize(scaledW, scaledH, { fit: "cover" });
+
+    // Apply Sharp Photo Filter Transformations if specified
+    if (photoFilter === "grayscale") {
+      resizedPhoto = resizedPhoto.grayscale();
+    } else if (photoFilter === "duotone") {
+      resizedPhoto = resizedPhoto.grayscale().tint({ r: 254, g: 225, b: 1 });
+    }
+
+    const resizedBuffer = await resizedPhoto.toBuffer();
 
     const panX = effectiveZoom > 1.0 ? offsetX : 0;
     const panY = effectiveZoom > 1.0 ? offsetY : 0;
@@ -118,6 +130,16 @@ export async function generateCardImage(
     processedPhotoBuffer = await sharp(Buffer.from(fallbackSvg)).png().toBuffer();
   }
 
+  // Dynamic QR Code SVG Markup
+  const qrSvgContent = generateQRSvgMarkup(
+    qrUrl || "https://github.com",
+    890,
+    1530,
+    200,
+    "#FEE101",
+    "#1b6838"
+  );
+
   // 2. Construct Base SVG Graphics
   const svgOverlay = `
     <svg width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
@@ -134,8 +156,6 @@ export async function generateCardImage(
 
       <!-- LANYARD HOLE CUT-OUT ON TOP OF CARD -->
       <circle cx="600" cy="60" r="36" fill="#000000" />
-
-      <!-- Header Title Text (Removed, using logo.png composite instead) -->
 
       <!-- Subheader Right Text -->
       <text x="${CARD_WIDTH - 90}" y="245" text-anchor="end" class="header-right-1">GOA, INDIA · 28 – 31 OCT 2026</text>
@@ -156,25 +176,9 @@ export async function generateCardImage(
         <text x="240" y="1612" text-anchor="middle" class="id-text">NO : ${escapeXml(cleanPassNo)}</text>
       </g>
 
-      <!-- Yellow QR Code Graphic on Bottom Right -->
-      <g transform="translate(940, 1450)" fill="#FEE101">
-        <rect x="0" y="0" width="50" height="50" />
-        <rect x="10" y="10" width="30" height="30" fill="#1b6838" />
-        <rect x="18" y="18" width="14" height="14" fill="#FEE101" />
-
-        <rect x="120" y="0" width="50" height="50" />
-        <rect x="130" y="10" width="30" height="30" fill="#1b6838" />
-        <rect x="138" y="18" width="14" height="14" fill="#FEE101" />
-
-        <rect x="0" y="120" width="50" height="50" />
-        <rect x="10" y="130" width="30" height="30" fill="#1b6838" />
-        <rect x="18" y="138" width="14" height="14" fill="#FEE101" />
-
-        <rect x="70" y="10" width="15" height="40" />
-        <rect x="70" y="70" width="30" height="30" />
-        <rect x="115" y="70" width="25" height="25" />
-        <rect x="115" y="110" width="55" height="30" />
-        <rect x="70" y="120" width="25" height="40" />
+      <!-- Dynamic Yellow QR Code Graphic on Bottom Right -->
+      <g>
+        ${qrSvgContent}
       </g>
     </svg>
   `;
@@ -258,22 +262,23 @@ export async function generateCardImage(
     console.warn("Could not composite 2-47.svg:", e);
   }
 
-  // Selected Frame Overlay (frame1.png, frame2.png, frame3.png, frame4.png)
-  try {
-    const frameAsset = selectedFrame || "frame1.png";
-    const framePath = path.join(assetsDir, frameAsset);
-    if (fs.existsSync(framePath)) {
-      const frameBuf = await sharp(framePath)
-        .resize(PHOTO_WIDTH, PHOTO_HEIGHT, { fit: "cover" })
-        .toBuffer();
-      compositeInputs.push({
-        input: frameBuf,
-        top: PHOTO_Y,
-        left: PHOTO_X,
-      });
+  // Selected Frame Overlay (if not 'none')
+  if (selectedFrame && selectedFrame !== "none") {
+    try {
+      const framePath = path.join(assetsDir, selectedFrame);
+      if (fs.existsSync(framePath)) {
+        const frameBuf = await sharp(framePath)
+          .resize(PHOTO_WIDTH, PHOTO_HEIGHT, { fit: "cover" })
+          .toBuffer();
+        compositeInputs.push({
+          input: frameBuf,
+          top: PHOTO_Y,
+          left: PHOTO_X,
+        });
+      }
+    } catch (e) {
+      console.warn("Could not composite frame overlay:", e);
     }
-  } catch (e) {
-    console.warn("Could not composite frame overlay:", e);
   }
 
   const finalPngBuffer = await baseCard
@@ -283,3 +288,4 @@ export async function generateCardImage(
 
   return finalPngBuffer;
 }
+

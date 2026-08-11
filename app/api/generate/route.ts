@@ -9,6 +9,8 @@ export async function POST(req: NextRequest) {
     const photoFile = formData.get("photo") as File | null;
     const name = (formData.get("name") as string) || "SAMIRA HADID";
     const stack = (formData.get("stack") as string) || "Creative Director";
+    const qrUrl = (formData.get("qrUrl") as string) || "https://github.com";
+    const photoFilter = (formData.get("photoFilter") as string) || "none";
     const builderTitle =
       (formData.get("builderTitle") as string) || "THE PIXEL ARCHITECT";
     const passNo = (formData.get("passNo") as string) || "57236";
@@ -52,11 +54,14 @@ export async function POST(req: NextRequest) {
         builderTitle,
         passNo,
         selectedFrame,
+        qrUrl,
+        photoFilter,
         zoom,
         offsetX,
         offsetY,
       });
     }
+
 
     // 2. Generate unique Card ID
     const cardId = generateCardId();

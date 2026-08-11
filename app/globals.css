@@ -95,7 +95,7 @@ body {
   --text-color: #ffffff;
   --hover-text-color: #ffffff;
 
-  font-family: var(--font-victor-mono), monospace;
+  font-family: var(--font-imbue), serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;

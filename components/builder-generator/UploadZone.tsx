@@ -8,9 +8,13 @@ interface UploadZoneProps {
   selectedPreviewUrl: string | null;
   onClearPhoto: () => void;
   selectedFrame?: string;
+  photoFilter?: string;
   zoom?: number;
+  setZoom?: (z: number) => void;
   offsetX?: number;
+  setOffsetX?: (x: number) => void;
   offsetY?: number;
+  setOffsetY?: (y: number) => void;
 }
 
 export default function UploadZone({
@@ -18,12 +22,18 @@ export default function UploadZone({
   selectedPreviewUrl,
   onClearPhoto,
   selectedFrame = "frame1.png",
+  photoFilter = "none",
   zoom = 1,
+  setZoom,
   offsetX = 0,
+  setOffsetX,
   offsetY = 0,
+  setOffsetY,
 }: UploadZoneProps) {
   const [isConverting, setIsConverting] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef<{ x: number; y: number; initX: number; initY: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFiles = async (files: FileList | null) => {
@@ -73,8 +83,66 @@ export default function UploadZone({
     }
   };
 
+  // Mouse wheel scroll to zoom
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!selectedPreviewUrl || !setZoom) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const nextZoom = Math.max(1.0, Math.min(3.0, Number((zoom + delta).toFixed(2))));
+    setZoom(nextZoom);
+  };
+
+  // Mouse dragging to pan photo
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!selectedPreviewUrl) return;
+    setIsDragging(true);
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      initX: offsetX,
+      initY: offsetY,
+    };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !dragStartRef.current || !setOffsetX || !setOffsetY) return;
+    const dx = e.clientX - dragStartRef.current.x;
+    const dy = e.clientY - dragStartRef.current.y;
+    setOffsetX(dragStartRef.current.initX + dx * 1.5);
+    setOffsetY(dragStartRef.current.initY + dy * 1.5);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    dragStartRef.current = null;
+  };
+
+  // Touch event handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!selectedPreviewUrl || e.touches.length !== 1) return;
+    setIsDragging(true);
+    const touch = e.touches[0];
+    dragStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      initX: offsetX,
+      initY: offsetY,
+    };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !dragStartRef.current || !setOffsetX || !setOffsetY || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - dragStartRef.current.x;
+    const dy = touch.clientY - dragStartRef.current.y;
+    setOffsetX(dragStartRef.current.initX + dx * 1.5);
+    setOffsetY(dragStartRef.current.initY + dy * 1.5);
+  };
+
   const activePanX = zoom > 1.0 ? offsetX : 0;
   const activePanY = zoom > 1.0 ? offsetY : 0;
+
+  const frameSrc = selectedFrame && selectedFrame !== "none" ? `/assets/${selectedFrame}` : null;
 
   return (
     <div className="w-full font-body flex flex-col gap-3">
@@ -89,19 +157,42 @@ export default function UploadZone({
       {/* Fixed-size container — same dimensions before & after upload */}
       <div className="flex items-center gap-3 sm:gap-4 w-full">
         {/* Photo / Dropzone Box (always same size) */}
-        <div className="w-[200px] sm:w-[255px] aspect-square bg-white border border-zinc-300 rounded-2xl relative overflow-hidden flex items-center justify-center shadow-md select-none shrink-0">
+        <div
+          onWheel={handleWheel}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleMouseUp}
+          className={`w-[130px] sm:w-[150px] aspect-square bg-white border border-zinc-300 rounded-xl relative overflow-hidden flex items-center justify-center shadow-sm select-none shrink-0 ${
+            selectedPreviewUrl ? (isDragging ? "cursor-grabbing" : "cursor-grab") : ""
+          }`}
+        >
           {selectedPreviewUrl ? (
-            <div
-              className="w-full h-full flex items-center justify-center transition-transform duration-75"
-              style={{
-                transform: `scale(${zoom}) translate(${activePanX / zoom}px, ${activePanY / zoom}px)`,
-              }}
-            >
-              <img
-                src={selectedPreviewUrl}
-                alt="User photo preview"
-                className="w-full h-full object-cover pointer-events-none"
-              />
+            <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
+              <div
+                className="w-full h-full flex items-center justify-center transition-transform duration-75"
+                style={{
+                  transform: `scale(${zoom}) translate(${activePanX / zoom}px, ${activePanY / zoom}px)`,
+                }}
+              >
+                <img
+                  src={selectedPreviewUrl}
+                  alt="User photo preview"
+                  className="w-full h-full object-cover pointer-events-none"
+                />
+              </div>
+
+              {/* Selected Frame Overlay if active */}
+              {frameSrc && (
+                <img
+                  src={frameSrc}
+                  alt="Frame overlay"
+                  className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"
+                />
+              )}
             </div>
           ) : (
             /* Dropzone with Grid Pattern */
@@ -115,10 +206,10 @@ export default function UploadZone({
                 dragActive ? "scale-[0.98] bg-[#FFF8D6]" : ""
               }`}
             >
-              <div className="relative w-full h-full grid grid-cols-[1fr_1rem_auto_1rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr] [--pattern-fg:rgba(0,0,0,0.12)]">
-                <div className="col-start-3 row-start-3 flex max-w-lg flex-col relative items-center justify-center p-3">
-                  <span className="font-['Imbue'] font-heading font-black text-xl sm:text-2xl tracking-wider text-[#0B6839] uppercase leading-none mb-1">
-                    {isConverting ? "PROCESSING HEIC..." : "CLICK TO UPLOAD"}
+              <div className="relative w-full h-full grid grid-cols-[1fr_0.5rem_auto_0.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr] [--pattern-fg:rgba(0,0,0,0.12)]">
+                <div className="col-start-3 row-start-3 flex max-w-lg flex-col relative items-center justify-center p-2">
+                  <span className="font-['Imbue'] font-heading font-black text-sm sm:text-base tracking-wider text-[#0B6839] uppercase leading-none mb-1">
+                    {isConverting ? "PROCESSING..." : "CLICK TO UPLOAD"}
                   </span>
                 </div>
 
@@ -133,11 +224,11 @@ export default function UploadZone({
 
         {/* Action buttons (visible only after upload) */}
         {selectedPreviewUrl && (
-          <div className="flex flex-col gap-2 min-w-[84px]">
+          <div className="flex flex-col gap-1.5 min-w-[70px]">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="custom-btn custom-btn-outline-pink py-2 px-3 text-xs text-center"
+              className="custom-btn custom-btn-outline-pink py-1 px-2.5 text-[10px] text-center"
             >
               CHANGE
             </button>
@@ -145,7 +236,7 @@ export default function UploadZone({
             <button
               type="button"
               onClick={onClearPhoto}
-              className="custom-btn custom-btn-pink py-2 px-3 text-xs text-center"
+              className="custom-btn custom-btn-pink py-1 px-2.5 text-[10px] text-center"
             >
               REMOVE
             </button>
@@ -155,5 +246,7 @@ export default function UploadZone({
     </div>
   );
 }
+
+
 
 

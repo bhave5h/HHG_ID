@@ -6,23 +6,36 @@ import TaskHeading from "./TaskHeading";
 import UploadSection from "./UploadSection";
 import PreviewSection from "./PreviewSection";
 import PromotionalLinks from "@/components/ui/PromotionalLinks";
+import { shootConfetti, shootFireworks } from "@/components/confetti-button";
 
 export default function BuilderGenerator() {
-  // Photo & Transformation State
+  // Photo & Transformation Draft State
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
   const [renderedCardDataUrl, setRenderedCardDataUrl] = useState<string | null>(
     null,
   );
-  const [zoom, setZoom] = useState<number>(1.0);
-  const [offsetX, setOffsetX] = useState<number>(0);
-  const [offsetY, setOffsetY] = useState<number>(0);
+  const [draftZoom, setDraftZoom] = useState<number>(1.0);
+  const [draftOffsetX, setDraftOffsetX] = useState<number>(0);
+  const [draftOffsetY, setDraftOffsetY] = useState<number>(0);
 
-  // Form Details State
-  const [name, setName] = useState("");
-  const [stack, setStack] = useState("");
+  // Form Details Draft State (Changes remain as draft until "Generate Builder ID Card" is clicked)
+  const [draftName, setDraftName] = useState("");
+  const [draftStack, setDraftStack] = useState("");
+  const [draftQrUrl, setDraftQrUrl] = useState("https://github.com");
+
+  // COMMITTED STATES (Used for 3D Lanyard Card & dynamic QR code)
+  const [committedName, setCommittedName] = useState("");
+  const [committedStack, setCommittedStack] = useState("");
+  const [committedQrUrl, setCommittedQrUrl] = useState("https://github.com");
+  const [committedZoom, setCommittedZoom] = useState<number>(1.0);
+  const [committedOffsetX, setCommittedOffsetX] = useState<number>(0);
+  const [committedOffsetY, setCommittedOffsetY] = useState<number>(0);
+
+  // IMMEDIATE STATES (Update 3D Card preview immediately when changed)
   const [passNo, setPassNo] = useState<string>("57236");
   const [selectedFrame, setSelectedFrame] = useState<string>("frame1.png");
+  const [photoFilter, setPhotoFilter] = useState<string>("none");
 
   // Auto-generate unique random pass number on mount
   useEffect(() => {
@@ -51,9 +64,9 @@ export default function BuilderGenerator() {
     setPhotoFile(null);
     setPhotoPreviewUrl(null);
     setRenderedCardDataUrl(null);
-    setZoom(1);
-    setOffsetX(0);
-    setOffsetY(0);
+    setDraftZoom(1);
+    setDraftOffsetX(0);
+    setDraftOffsetY(0);
   };
 
   const handleGenerate = async () => {
@@ -62,7 +75,7 @@ export default function BuilderGenerator() {
       return;
     }
 
-    if (!name.trim()) {
+    if (!draftName.trim()) {
       setErrorMsg("Please enter your name.");
       return;
     }
@@ -70,16 +83,29 @@ export default function BuilderGenerator() {
     setIsGenerating(true);
     setErrorMsg(null);
 
+    // Commit draft values to 3D Preview Card & QR Code
+    setCommittedName(draftName);
+    setCommittedStack(draftStack);
+    setCommittedQrUrl(draftQrUrl);
+    setCommittedZoom(draftZoom);
+    setCommittedOffsetX(draftOffsetX);
+    setCommittedOffsetY(draftOffsetY);
+
+    // Trigger fireworks celebration effect when clicked generate
+    shootFireworks();
+
     try {
       const formData = new FormData();
       formData.append("photo", photoFile);
-      formData.append("name", name);
-      formData.append("stack", stack);
+      formData.append("name", draftName);
+      formData.append("stack", draftStack);
+      formData.append("qrUrl", draftQrUrl);
       formData.append("passNo", passNo);
       formData.append("selectedFrame", selectedFrame);
-      formData.append("zoom", zoom.toString());
-      formData.append("offsetX", offsetX.toString());
-      formData.append("offsetY", offsetY.toString());
+      formData.append("photoFilter", photoFilter);
+      formData.append("zoom", draftZoom.toString());
+      formData.append("offsetX", draftOffsetX.toString());
+      formData.append("offsetY", draftOffsetY.toString());
       if (renderedCardDataUrl) {
         formData.append("cardImageDataUrl", renderedCardDataUrl);
       }
@@ -119,12 +145,20 @@ export default function BuilderGenerator() {
     setPhotoFile(null);
     setPhotoPreviewUrl(null);
     setRenderedCardDataUrl(null);
-    setZoom(1);
-    setOffsetX(0);
-    setOffsetY(0);
-    setName("");
-    setStack("");
+    setDraftZoom(1);
+    setDraftOffsetX(0);
+    setDraftOffsetY(0);
+    setDraftName("");
+    setDraftStack("");
+    setDraftQrUrl("https://github.com");
+    setCommittedName("");
+    setCommittedStack("");
+    setCommittedQrUrl("https://github.com");
+    setCommittedZoom(1);
+    setCommittedOffsetX(0);
+    setCommittedOffsetY(0);
     setSelectedFrame("frame1.png");
+    setPhotoFilter("none");
     setPassNo(Math.floor(10000 + Math.random() * 90000).toString());
     setGeneratedResult(null);
     setErrorMsg(null);
@@ -144,7 +178,7 @@ export default function BuilderGenerator() {
 
         {/* Two Column System: Left = Uploading & Controls Section; Right = Live Preview Section */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-          {/* LEFT COLUMN: Uploading & Controls Section Component */}
+          {/* LEFT COLUMN: Uploading & Controls Section Component (Draft Inputs & Immediate Frame/Filter) */}
           <div className="md:col-span-6 flex flex-col gap-6">
             <UploadSection
               onPhotoSelected={handlePhotoSelected}
@@ -152,34 +186,43 @@ export default function BuilderGenerator() {
               onClearPhoto={handleClearPhoto}
               selectedFrame={selectedFrame}
               setSelectedFrame={setSelectedFrame}
-              name={name}
-              setName={setName}
-              stack={stack}
-              setStack={setStack}
+              photoFilter={photoFilter}
+              setPhotoFilter={setPhotoFilter}
+              name={draftName}
+              setName={setDraftName}
+              stack={draftStack}
+              setStack={setDraftStack}
+              qrUrl={draftQrUrl}
+              setQrUrl={setDraftQrUrl}
               passNo={passNo}
               onGenerate={handleGenerate}
               isGenerating={isGenerating}
               hasPhoto={!!photoFile}
-              zoom={zoom}
-              setZoom={setZoom}
-              offsetX={offsetX}
-              setOffsetX={setOffsetX}
-              offsetY={offsetY}
-              setOffsetY={setOffsetY}
+              zoom={draftZoom}
+              setZoom={setDraftZoom}
+              offsetX={draftOffsetX}
+              setOffsetX={setDraftOffsetX}
+              offsetY={draftOffsetY}
+              setOffsetY={setDraftOffsetY}
             />
           </div>
 
-          {/* RIGHT COLUMN: Preview Section Component */}
+          {/* RIGHT COLUMN: Preview Section Component (Displays Committed Text & Zoom/Pan, Immediate Frame & Filter) */}
           <div className="md:col-span-6 flex flex-col items-center w-full ">
             <PreviewSection
               photoPreviewUrl={photoPreviewUrl}
-              name={name}
-              stack={stack}
+              name={committedName}
+              stack={committedStack}
+              qrUrl={committedQrUrl}
+              photoFilter={photoFilter}
               passNo={passNo}
               selectedFrame={selectedFrame}
-              zoom={zoom}
-              offsetX={offsetX}
-              offsetY={offsetY}
+              zoom={committedZoom}
+              setZoom={setDraftZoom}
+              offsetX={committedOffsetX}
+              setOffsetX={setDraftOffsetX}
+              offsetY={committedOffsetY}
+              setOffsetY={setDraftOffsetY}
               onCardTextureGenerated={setRenderedCardDataUrl}
               generatedResult={generatedResult}
               onReset={handleReset}
@@ -191,3 +234,5 @@ export default function BuilderGenerator() {
     </div>
   );
 }
+
+
