@@ -33,7 +33,7 @@ export async function GET(
       return new NextResponse("Card Image Not Found", { status: 404 });
     }
 
-    return new NextResponse(imageBuffer, {
+    return new NextResponse(new Uint8Array(imageBuffer), {
       status: 200,
       headers: {
         "Content-Type": "image/png",
