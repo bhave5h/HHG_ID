@@ -17,11 +17,11 @@ export const DEFAULT_IDCARD_DATA: Required<Omit<IDCardData, "photoPreviewUrl">> 
   stack: "Creative Director",
   builderTitle: "BUILDER",
   passNo: "1",
-  selectedFrame: "frame1.png",
+  selectedFrame: "none",
   zoom: 1,
   offsetX: 0,
   offsetY: 0,
-  qrUrl: "https://github.com",
+  qrUrl: "https://x.com/BH4VE5H",
   photoFilter: "none",
 };
 

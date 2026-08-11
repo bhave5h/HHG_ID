@@ -35,7 +35,7 @@ export async function generateCardImage(
     stack,
     passNo = "57236",
     selectedFrame = "frame1.png",
-    qrUrl = "https://github.com",
+    qrUrl = "https://x.com/BH4VE5H/",
     photoFilter = "none",
     zoom = 1.0,
     offsetX = 0,
@@ -132,7 +132,7 @@ export async function generateCardImage(
 
   // Dynamic QR Code SVG Markup
   const qrSvgContent = generateQRSvgMarkup(
-    qrUrl || "https://github.com",
+    qrUrl || "https://x.com/BH4VE5H/",
     890,
     1530,
     200,

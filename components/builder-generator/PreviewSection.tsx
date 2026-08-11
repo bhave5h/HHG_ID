@@ -65,20 +65,13 @@ export default function PreviewSection({
           setOffsetY={setOffsetY}
           cardUrl={generatedResult?.cardUrl}
           onCardTextureGenerated={onCardTextureGenerated}
-        />
-      </div>
-
-      {/* Generated Result Action Buttons (Download PNG, Share on X) */}
-      {generatedResult && (
-        <ResultActions
-          cardUrl={generatedResult.cardUrl}
-          shareUrl={generatedResult.shareUrl}
-          xShareUrl={generatedResult.xShareUrl}
-          name={generatedResult.name}
+          generatedResult={generatedResult}
           onReset={onReset}
         />
-      )}
+      </div>
     </div>
   );
 }
+
+
 

@@ -178,7 +178,7 @@ export default function BuilderForm({
 
       {/* ZOOM & POSITION CONTROLS (Only when photo is uploaded) */}
       {hasPhoto && (
-        <div className="p-3 bg-white/80 border border-[#0B6839]/15 rounded-xl flex flex-col gap-2 my-0.5 shadow-xs">
+        <div className="p-3 bg-white/80 border-2 border-[#FF0080] rounded-3xl flex flex-col gap-2 my-0.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-black uppercase tracking-wider text-[#0B6839] flex items-center gap-1">
               🔍 ZOOM & ADJUST PHOTO
@@ -195,10 +195,6 @@ export default function BuilderForm({
               RESET POSITION
             </button>
           </div>
-
-          <p className="text-[10px] text-zinc-600 font-semibold leading-tight">
-            💡 Tip: Use your <strong>mouse scroll wheel</strong> over photo to zoom, and <strong>drag with mouse</strong> to pan position!
-          </p>
 
           {/* Zoom Slider */}
           <div className="flex items-center gap-2.5">
@@ -256,33 +252,14 @@ export default function BuilderForm({
       )}
 
       {/* 7. Generate Button */}
-      <div className="mt-0.5">
+      <div className="mt-0.5 w-fit mx-auto">
         <Neo3DButton
           type="submit"
           variant="outline-pink"
           disabled={isGenerating || !hasPhoto}
         >
           {isGenerating ? (
-            <span className="flex items-center justify-center gap-2 text-xs">
-              <svg
-                className="animate-spin h-4 w-4 text-black"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
+            <span className="flex items-center justify-center gap-2 text-xs ">
               GENERATING BUILDER PASS...
             </span>
           ) : (

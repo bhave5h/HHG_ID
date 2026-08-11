@@ -1,10 +1,9 @@
-"use client";
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import { IDCardData, normalizeIDCardData } from "@/types/idCard";
 import { drawQRToCanvas } from "@/lib/qr";
 import { applyPhotoFilterCanvas } from "@/lib/image/photoFilters";
+import PreviewControls from "./PreviewControls";
 
 // Dynamically import Lanyard with SSR disabled for R3F Canvas compatibility
 const Lanyard = dynamic(() => import("./Lanyard"), {
@@ -34,10 +33,27 @@ export interface IDCardPreviewProps extends IDCardData {
   setZoom?: (z: number) => void;
   setOffsetX?: (x: number) => void;
   setOffsetY?: (y: number) => void;
+  generatedResult?: {
+    id: string;
+    cardUrl: string;
+    shareUrl: string;
+    xShareUrl: string;
+    name: string;
+  } | null;
+  onReset?: () => void;
 }
 
 export default function IDCardPreview(props: IDCardPreviewProps) {
-  const { cardUrl = null, onCardTextureGenerated, setZoom, setOffsetX, setOffsetY } = props;
+  const {
+    cardUrl = null,
+    onCardTextureGenerated,
+    setZoom,
+    setOffsetX,
+    setOffsetY,
+    generatedResult = null,
+    onReset = () => {},
+  } = props;
+
   const normalized = normalizeIDCardData(props);
   const {
     displayName,
@@ -55,7 +71,12 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
   const [viewMode, setViewMode] = useState<"3d" | "2d">("3d");
   const [cardTextureUrl, setCardTextureUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const dragStartRef = useRef<{ x: number; y: number; initX: number; initY: number } | null>(null);
+  const dragStartRef = useRef<{
+    x: number;
+    y: number;
+    initX: number;
+    initY: number;
+  } | null>(null);
 
   // Helper for loading images cleanly on Canvas
   const loadImage = useCallback(
@@ -111,20 +132,24 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
       ctx.textAlign = "left";
 
       // Async Assets Preloading
-      const framePath = selectedFrame && selectedFrame !== "none" ? `/assets/${selectedFrame}` : null;
+      const framePath =
+        selectedFrame && selectedFrame !== "none"
+          ? `/assets/${selectedFrame}`
+          : null;
 
-      const [mainLogo, goaLogo, studioLogo, frameImg, userPhotoImg] = await Promise.all([
-        loadImage("/assets/logo.png"),
-        loadImage("/assets/goa.svg"),
-        loadImage("/assets/2-47.svg"),
-        framePath ? loadImage(framePath) : Promise.resolve(null),
-        photoPreviewUrl ? loadImage(photoPreviewUrl) : Promise.resolve(null),
-      ]);
+      const [mainLogo, goaLogo, studioLogo, frameImg, userPhotoImg] =
+        await Promise.all([
+          loadImage("/assets/logo.png"),
+          loadImage("/assets/goa.svg"),
+          loadImage("/assets/2-47.svg"),
+          framePath ? loadImage(framePath) : Promise.resolve(null),
+          photoPreviewUrl ? loadImage(photoPreviewUrl) : Promise.resolve(null),
+        ]);
 
       if (mainLogo) {
-        ctx.drawImage(mainLogo, 110, 195, 570, 120); 
+        ctx.drawImage(mainLogo, 110, 195, 570, 120);
       }
-      if (goaLogo) ctx.drawImage(goaLogo, 800, 120, 270, 200); 
+      if (goaLogo) ctx.drawImage(goaLogo, 800, 120, 270, 200);
       if (studioLogo) ctx.drawImage(studioLogo, 110, 340, 250, 120);
 
       // 4. Photo Viewport Container (Square 1:1 [110, 500, 980, 980])
@@ -165,11 +190,11 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
       } else {
         ctx.fillStyle = CARD_THEME.yellow;
         ctx.font = `900 110px ${CARD_THEME.fontHeader}`;
-        ctx.textAlign = "center"; 
+        ctx.textAlign = "center";
         ctx.fillText("Upload Your Photo", px + pw / 2, py + ph / 2 - 40);
-        ctx.font = "900 110px sans-serif";
+        ctx.font = "900 110px ";
         ctx.fillStyle = "#ffffff";
-        ctx.fillText("in Panel", px + pw / 2, py + ph / 2 + 60); 
+        ctx.fillText("in Panel", px + pw / 2, py + ph / 2 + 60);
         ctx.textAlign = "center";
       }
 
@@ -205,7 +230,7 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
 
       ctx.fillStyle = CARD_THEME.badgeGreenText;
       ctx.font = `900 40px ${CARD_THEME.fontMono}`;
-      ctx.fillText(`NO: ${displayPassNo}`, 110, 1710); 
+      ctx.fillText(`NO: ${displayPassNo}`, 110, 1710);
       ctx.restore();
 
       // Dynamic QR Code Rendering (Bottom Right)
@@ -215,12 +240,12 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
 
       drawQRToCanvas(
         ctx,
-        qrUrl || "https://github.com",
+        qrUrl || "https://x.com/BH4VE5H/",
         qx,
         qy,
         qw,
         CARD_THEME.yellow,
-        CARD_THEME.bgGreen
+        CARD_THEME.bgGreen,
       );
 
       const generatedDataUrl = canvas.toDataURL("image/png");
@@ -258,7 +283,10 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
   const handleWheel = (e: React.WheelEvent) => {
     if (!setZoom) return;
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    const nextZoom = Math.max(1.0, Math.min(3.0, Number((zoom + delta).toFixed(2))));
+    const nextZoom = Math.max(
+      1.0,
+      Math.min(3.0, Number((zoom + delta).toFixed(2))),
+    );
     setZoom(nextZoom);
   };
 
@@ -273,7 +301,8 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !dragStartRef.current || !setOffsetX || !setOffsetY) return;
+    if (!isDragging || !dragStartRef.current || !setOffsetX || !setOffsetY)
+      return;
     const dx = e.clientX - dragStartRef.current.x;
     const dy = e.clientY - dragStartRef.current.y;
     setOffsetX(dragStartRef.current.initX + dx * 2);
@@ -298,7 +327,14 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || !dragStartRef.current || !setOffsetX || !setOffsetY || e.touches.length !== 1) return;
+    if (
+      !isDragging ||
+      !dragStartRef.current ||
+      !setOffsetX ||
+      !setOffsetY ||
+      e.touches.length !== 1
+    )
+      return;
     const touch = e.touches[0];
     const dx = touch.clientX - dragStartRef.current.x;
     const dy = touch.clientY - dragStartRef.current.y;
@@ -319,7 +355,8 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleMouseUp}
-      className={`w-full max-w-[420px] mx-auto aspect-[2/3] relative select-none rounded-[32px] overflow-hidden shadow-2xl ${
+      className={`bg-white w-full h-[520px] sm:h-[520px] mx-auto aspect-auto sm:aspect-[2/3] relative select-none p-10 pb-15 border border-black/20 rounded-3xl 
+        ${
         isDragging ? "cursor-grabbing" : "cursor-grab"
       }`}
     >
@@ -338,11 +375,12 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
   );
 
   return (
-    <div className="bg-[#FFFBE8] p-5 flex flex-col gap-4 font-body rounded-lg shadow-[7px_7px_0px_0px_#084e2a]">
+    <div className="bg-[#FFFBE8] p-4 flex flex-col gap-4 font-body rounded-lg shadow-[7px_7px_0px_0px_#084e2a] h-[750px] sm:h-[723px]">
       {/* 1. Main Card Preview Container */}
-      <div className="relative w-full rounded-3xl border border-white/10 overflow-hidden shadow-2xl shadow-black/40">
+
+      <div className="relative w-full overflow-hidden">
         {viewMode === "3d" ? (
-          <div className="relative w-full h-[540px] sm:h-[600px] flex items-center justify-center bg-gray-50">
+          <div className="bg-white relative w-full h-[520px] sm:h-[520px] flex items-center justify-center border border-black/20 rounded-3xl">
             <Lanyard
               position={[0, 0, 13]}
               fov={20}
@@ -354,61 +392,17 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
             />
           </div>
         ) : (
-          <div className="p-4 bg-white flex justify-center">{render2DCard()}</div>
+          <div className="flex justify-center">{render2DCard()}</div>
         )}
       </div>
 
-      {/* 2. 3D / 2D Mode Switcher Toggle Buttons (Below 3D/2D Preview Container) */}
-      <div className="flex items-center justify-center bg-white/10 backdrop-blur-md p-1.5 rounded-full border border-white/15">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setViewMode("3d")}
-            className={`custom-btn text-xs py-1.5 px-4 ${
-              viewMode === "3d" ? "custom-btn-pink" : "custom-btn-outline-pink"
-            }`}
-          >
-            3D ID card
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode("2d")}
-            className={`custom-btn text-xs py-1.5 px-4 ${
-              viewMode === "2d" ? "custom-btn-pink" : "custom-btn-outline-pink"
-            }`}
-          >
-            2D Id Card
-          </button>
-        </div>
-      </div>
-
-      {/* 3. Result / Quick Action Buttons (Below Mode Switcher) */}
-      {cardTextureUrl && (
-        <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
-          <a
-            href={cardTextureUrl}
-            download={`HH-Goa-2026-${(displayName || "Builder").replace(/\s+/g, "-")}.png`}
-            className="custom-btn custom-btn-pink py-2 px-4 text-xs font-black uppercase text-center flex items-center justify-center gap-1.5 shadow-md flex-1"
-          >
-            📥 DOWNLOAD PREVIEW (PNG)
-          </a>
-          <button
-            type="button"
-            onClick={() => {
-              if (navigator.clipboard) {
-                navigator.clipboard.writeText(window.location.href);
-                alert("Preview page URL copied to clipboard!");
-              }
-            }}
-            className="custom-btn custom-btn-outline-pink py-2 px-4 text-xs font-black uppercase text-center flex items-center justify-center gap-1.5 shadow-md flex-1"
-          >
-            🔗 COPY LINK
-          </button>
-        </div>
-      )}
+      {/* 2. Unified Preview Controls (3D/2D Toggle + Result Actions) */}
+      <PreviewControls
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        generatedResult={generatedResult}
+        onReset={onReset}
+      />
     </div>
   );
 }
-
-
-

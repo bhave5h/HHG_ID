@@ -111,10 +111,11 @@ export default function Lanyard({
         }
       >
         <React.Suspense fallback={null}>
-          {/* Neutral studio lighting setup */}
-          <ambientLight intensity={Math.PI * 0.85} />
-          <directionalLight position={[5, 8, 8]} intensity={1.4} />
-          <directionalLight position={[-5, -5, -5]} intensity={0.6} />
+          {/* Bright vibrant studio lighting setup */}
+          <ambientLight intensity={Math.PI * 1.6} />
+          <directionalLight position={[5, 10, 8]} intensity={2.2} />
+          <directionalLight position={[-5, 5, 5]} intensity={1.2} />
+          <directionalLight position={[0, -5, 5]} intensity={0.8} />
 
           <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
             <Band
@@ -128,28 +129,28 @@ export default function Lanyard({
           </Physics>
           <Environment blur={0.75}>
             <Lightformer
-              intensity={2}
+              intensity={4}
               color="white"
               position={[0, -1, 5]}
               rotation={[0, 0, Math.PI / 3]}
               scale={[100, 0.1, 1]}
             />
             <Lightformer
-              intensity={2.5}
+              intensity={4.5}
               color="white"
               position={[-1, -1, 1]}
               rotation={[0, 0, Math.PI / 3]}
               scale={[100, 0.1, 1]}
             />
             <Lightformer
-              intensity={2.5}
+              intensity={4.5}
               color="white"
               position={[1, 1, 1]}
               rotation={[0, 0, Math.PI / 3]}
               scale={[100, 0.1, 1]}
             />
             <Lightformer
-              intensity={5}
+              intensity={8}
               color="white"
               position={[-10, 0, 14]}
               rotation={[0, Math.PI / 2, Math.PI / 3]}
@@ -330,12 +331,19 @@ function Band({
           delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed)),
         );
       });
-      curve.points[0].copy(j3.current.translation());
-      curve.points[1].copy(j2.current.lerped);
-      curve.points[2].copy(j1.current.lerped);
-      curve.points[3].copy(fixed.current.translation());
-      if (band.current?.geometry) {
-        band.current.geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));
+      const p3 = j3.current?.translation();
+      const p2 = j2.current?.lerped;
+      const p1 = j1.current?.lerped;
+      const p0 = fixed.current?.translation();
+
+      if (p3 && p2 && p1 && p0 && !isNaN(p3.x) && !isNaN(p0.x)) {
+        curve.points[0].copy(p3);
+        curve.points[1].copy(p2);
+        curve.points[2].copy(p1);
+        curve.points[3].copy(p0);
+        if (band.current?.geometry) {
+          band.current.geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));
+        }
       }
       ang.copy(card.current.angvel());
       rot.copy(card.current.rotation());

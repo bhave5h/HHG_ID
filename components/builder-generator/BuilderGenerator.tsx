@@ -5,7 +5,7 @@ import HeaderBar from "./HeaderBar";
 import TaskHeading from "./TaskHeading";
 import UploadSection from "./UploadSection";
 import PreviewSection from "./PreviewSection";
-import PromotionalLinks from "@/components/ui/PromotionalLinks";
+import Footer from "@/components/ui/Footer";
 import { shootConfetti, shootFireworks } from "@/components/confetti-button";
 
 export default function BuilderGenerator() {
@@ -22,12 +22,12 @@ export default function BuilderGenerator() {
   // Form Details Draft State (Changes remain as draft until "Generate Builder ID Card" is clicked)
   const [draftName, setDraftName] = useState("");
   const [draftStack, setDraftStack] = useState("");
-  const [draftQrUrl, setDraftQrUrl] = useState("https://github.com");
+  const [draftQrUrl, setDraftQrUrl] = useState("");
 
   // COMMITTED STATES (Used for 3D Lanyard Card & dynamic QR code)
   const [committedName, setCommittedName] = useState("");
   const [committedStack, setCommittedStack] = useState("");
-  const [committedQrUrl, setCommittedQrUrl] = useState("https://github.com");
+  const [committedQrUrl, setCommittedQrUrl] = useState("");
   const [committedZoom, setCommittedZoom] = useState<number>(1.0);
   const [committedOffsetX, setCommittedOffsetX] = useState<number>(0);
   const [committedOffsetY, setCommittedOffsetY] = useState<number>(0);
@@ -150,10 +150,10 @@ export default function BuilderGenerator() {
     setDraftOffsetY(0);
     setDraftName("");
     setDraftStack("");
-    setDraftQrUrl("https://github.com");
+    setDraftQrUrl("https://x.com/BH4VE5H/");
     setCommittedName("");
     setCommittedStack("");
-    setCommittedQrUrl("https://github.com");
+    setCommittedQrUrl("https://x.com/BH4VE5H/");
     setCommittedZoom(1);
     setCommittedOffsetX(0);
     setCommittedOffsetY(0);
@@ -230,7 +230,7 @@ export default function BuilderGenerator() {
           </div>
         </div>
       </div>
-      <PromotionalLinks />
+      <Footer />
     </div>
   );
 }
