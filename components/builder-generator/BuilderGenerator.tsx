@@ -170,7 +170,7 @@ export default function BuilderGenerator() {
           </div>
 
           {/* RIGHT COLUMN: Preview Section Component */}
-          <div className="md:col-span-6 flex flex-col items-center w-full">
+          <div className="md:col-span-6 flex flex-col items-center w-full ">
             <PreviewSection
               photoPreviewUrl={photoPreviewUrl}
               name={name}

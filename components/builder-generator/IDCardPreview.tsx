@@ -100,11 +100,11 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
 
       // Subheader Right Text
       ctx.fillStyle = CARD_THEME.yellow;
-      ctx.font = `900 54px ${CARD_THEME.fontHeader}`;
+      ctx.font = `900 55px ${CARD_THEME.fontHeader}`;
       ctx.textAlign = "right";
-      ctx.fillText("GOA, INDIA · 28 – 31 OCT 2026", 1110, 245);
-      ctx.font = `900 20px ${CARD_THEME.fontHeader}`;
-      ctx.fillText("LESS NOISE. MORE SIGNAL", 1110, 275);
+      ctx.fillText("GOA, INDIA · 28 – 31 OCT 2026", 1060, 380);
+      ctx.font = `900 55px ${CARD_THEME.fontHeader}`;
+      ctx.fillText("LESS NOISE. MORE SIGNAL", 1060, 445);
       ctx.textAlign = "left";
 
       // Async Assets Preloading
@@ -117,10 +117,10 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
       ]);
 
       if (mainLogo) {
-        ctx.drawImage(mainLogo, 110, 190, 550, 100); 
+        ctx.drawImage(mainLogo, 110, 195, 570, 120); 
       }
-      if (goaLogo) ctx.drawImage(goaLogo, 780, 120, 270, 200);
-      if (studioLogo) ctx.drawImage(studioLogo, 110, 320, 200, 90);
+      if (goaLogo) ctx.drawImage(goaLogo, 800, 120, 270, 200); 
+      if (studioLogo) ctx.drawImage(studioLogo, 110, 340, 250, 120);
 
       // 4. Photo Viewport Container (Square 1:1 [90, 320, 1020, 1020])
       const px = 110,
@@ -154,13 +154,13 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
         ctx.drawImage(userPhotoImg, dx, dy, scaledW, scaledH);
       } else {
         ctx.fillStyle = CARD_THEME.yellow;
-        ctx.font = `900 64px ${CARD_THEME.fontHeader}`;
-        ctx.textAlign = "center";
-        ctx.fillText("BUILDER PASS", px + pw / 2, py + ph / 2 - 10);
-        ctx.font = "700 30px Arial, sans-serif";
+        ctx.font = `900 110px ${CARD_THEME.fontHeader}`;
+        ctx.textAlign = "center"; 
+        ctx.fillText("Upload Your Photo", px + pw / 2, py + ph / 2 - 40);
+        ctx.font = "900 110px, sans-serif";
         ctx.fillStyle = "#ffffff";
-        ctx.fillText("Upload Photo in Panel", px + pw / 2, py + ph / 2 + 45);
-        ctx.textAlign = "left";
+        ctx.fillText("in Panel", px + pw / 2, py + ph / 2 + 60); 
+        ctx.textAlign = "center";
       }
 
       if (frameImg) {
@@ -176,31 +176,32 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
       ctx.stroke();
 
       // 5. Bottom Details Section (On Green Background)
+
       // Name (Yellow Imbue Font)
       ctx.fillStyle = CARD_THEME.yellow;
-      ctx.font = `900 88px ${CARD_THEME.fontHeader}`;
-      ctx.fillText(displayName, 90, 1460);
+      ctx.font = `900 90px ${CARD_THEME.fontHeader}`;
+      ctx.fillText(displayName, 100, 1572);
 
       // Role / Title (Yellow/Light-Green Font)
       ctx.fillStyle = CARD_THEME.roleGreen;
-      ctx.font = `700 42px ${CARD_THEME.fontMono}`;
-      ctx.fillText(displayStack, 90, 1525);
+      ctx.font = `700 50px ${CARD_THEME.fontMono}`;
+      ctx.fillText(displayStack, 100, 1635);
 
       // ID Badge (Yellow Pill Box with Green Text)
       ctx.save();
       ctx.fillStyle = CARD_THEME.yellow;
       ctx.beginPath();
-      ctx.roundRect(90, 1565, 300, 72, 18);
+      ctx.roundRect(100, 1660, 300, 72, 18);
       ctx.fill();
 
       ctx.fillStyle = CARD_THEME.badgeGreenText;
-      ctx.font = `900 32px ${CARD_THEME.fontMono}`;
-      ctx.fillText(`NO : ${displayPassNo}`, 125, 1612);
+      ctx.font = `900 40px ${CARD_THEME.fontMono}`;
+      ctx.fillText(`NO: ${displayPassNo}rf`, 110, 1710); 
       ctx.restore();
 
       // Yellow Vector QR Code Pattern (Bottom Right)
-      const qx = 940,
-        qy = 1450,
+      const qx = 900,
+        qy = 1560,
         qw = 170,
         qh = 170;
 
@@ -339,7 +340,7 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
               <span className="font-['Imbue'] font-heading font-black text-xl text-[#FEE101] uppercase tracking-wider">
                 BUILDER PASS
               </span>
-              <span className="font-body text-[9px] text-zinc-300 font-bold mt-0.5">
+              <span className="font-body text-[15px] text-zinc-300 font-bold mt-0.5">
                 Upload Photo in Panel
               </span>
             </div>
@@ -418,7 +419,7 @@ export default function IDCardPreview(props: IDCardPreviewProps) {
               frontImage={cardTextureUrl}
               backImage={CARD_THEME.backPngPath}
               imageFit="cover"
-              lanyardWidth={2}
+              lanyardWidth={1}
             />
           </div>
         ) : (
