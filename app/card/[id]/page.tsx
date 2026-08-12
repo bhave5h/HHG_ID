@@ -22,32 +22,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const name = card.name || "HH Goa Builder";
-  const stack = card.stack || "AI × Design × Dev";
-  const titleText = card.builderTitle || "THE PIXEL ARCHITECT";
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ).replace(/\/$/, "");
 
-  const title = `${name} — HH Goa 2026 Builder Pass`;
-  const description = `Building, shipping & creating at HH Goa 2026. Stack: ${stack} | Class: ${titleText}. #FrameInGoa`;
-
-  // Absolute URL for OG Card image so X (Twitter) & crawlers render the image preview cleanly
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://hhgoa-id.vercel.app";
-  const imageUrl =
-    card.imageUrl && card.imageUrl.startsWith("http")
-      ? card.imageUrl
-      : `${baseUrl}/api/card-image/${id}`;
+  const title = `${name} — HH Goa 2026`;
+  const description = "Building, shipping & creating at HH Goa 2026.";
+  const cardPageUrl = `${siteUrl}/card/${id}`;
 
   return {
     title,
     description,
-    metadataBase: new URL(baseUrl),
+    metadataBase: new URL(siteUrl),
     openGraph: {
       title,
       description,
-      url: `/card/${id}`,
+      url: cardPageUrl,
       siteName: "HH Goa 2026 Builder Pass",
       images: [
         {
-          url: imageUrl,
+          url: card.imageUrl,
           width: 1200,
           height: 1800,
           alt: `${name}'s HH Goa 2026 Builder Pass`,
@@ -60,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: [imageUrl],
+      images: [card.imageUrl],
     },
   };
 }
@@ -73,12 +67,10 @@ export default async function CardSharePage({ params }: Props) {
     notFound();
   }
 
-  const cardImageUrl =
-    card.imageUrl && card.imageUrl.startsWith("http")
-      ? card.imageUrl
-      : `/api/card-image/${id}`;
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://hhgoa-id.vercel.app";
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ).replace(/\/$/, "");
+
   const xShareUrl = getXShareUrl(id, siteUrl, card.name);
   const cardName = card.name || "HH Goa 2026 Builder Pass";
 
@@ -91,7 +83,7 @@ export default async function CardSharePage({ params }: Props) {
         {/* 3D Lanyard & 2D Card Viewer + Combined Actions & CTA Card */}
         <div className="w-full flex justify-center mt-2 my-auto">
           <CardViewer
-            cardImageUrl={cardImageUrl}
+            cardImageUrl={card.imageUrl}
             cardName={cardName}
             xShareUrl={xShareUrl}
           />

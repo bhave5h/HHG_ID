@@ -62,36 +62,32 @@ export async function POST(req: NextRequest) {
       });
     }
 
-
-    // 2. Generate unique Card ID
+    // 1. Generate unique public card ID
     const cardId = generateCardId();
 
-    // Determine host / base URL for link sharing
-    const host = req.headers.get("host") || "localhost:3000";
-    const protocol = req.headers.get("x-forwarded-proto") || "https";
-    // Avoid http for deployed domains unless localhost
-    const scheme = host.includes("localhost") ? "http" : "https";
-    const baseUrl = `${scheme}://${host}`;
+    // 2. Base site URL for public share link
+    const siteUrl = (
+      process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+    ).replace(/\/$/, "");
 
-    // 3. Save Card image & metadata
+    // 3. Upload to Supabase Storage & Insert record into Supabase public.cards table
     const cardRecord = await saveCard({
       id: cardId,
       name,
       stack,
       builderTitle,
       imageBuffer: cardPngBuffer,
-      baseUrl,
     });
 
-    // 4. Generate X Intent URL
-    const xShareUrl = getXShareUrl(cardId, baseUrl, name);
-    const cardPageUrl = `${baseUrl}/card/${cardId}`;
+    const shareUrl = `${siteUrl}/card/${cardId}`;
+    const xShareUrl = getXShareUrl(cardId, siteUrl, name);
 
     return NextResponse.json({
       success: true,
       id: cardId,
       cardUrl: cardRecord.imageUrl,
-      shareUrl: cardPageUrl,
+      imageUrl: cardRecord.imageUrl,
+      shareUrl,
       xShareUrl,
       name: cardRecord.name,
       stack: cardRecord.stack,
@@ -101,7 +97,9 @@ export async function POST(req: NextRequest) {
     console.error("Error in /api/generate:", error);
     return NextResponse.json(
       {
+        success: false,
         error:
+          error.message ||
           "Something went wrong while creating your Builder Card. Please try again.",
       },
       { status: 500 }
