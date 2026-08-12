@@ -3,6 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { HASHTAG } from "@/lib/constants";
+import { handleXShare } from "@/lib/share/x";
+import { downloadOrOpenImage } from "@/lib/share/download";
 
 interface CardActionControlsProps {
   viewMode: "3d" | "2d";
@@ -20,6 +22,16 @@ export default function CardActionControls({
   xShareUrl,
 }: CardActionControlsProps) {
   const downloadFileName = `HH-Goa-2026-${(cardName || "Builder").replace(/\s+/g, "-")}.png`;
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.preventDefault();
+    downloadOrOpenImage(cardImageUrl, downloadFileName);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleXShare(xShareUrl, cardName, e);
+  };
 
   return (
     <div className="lg:w-[900px] flex flex-col items-center gap-2.5 z-10 font-body relative bg-[#FFFBE8] rounded-lg shadow-[5px_5px_0px_0px_#084e2a] p-3.5 sm:p-4 text-center mt-2">
@@ -49,22 +61,21 @@ export default function CardActionControls({
           2D ID Card
         </button>
 
-        <a
-          href={cardImageUrl}
-          download={downloadFileName}
-          className="btn-pink text-xs sm:text-sm py-1.5 px-3 w-auto whitespace-nowrap inline-block"
+        <button
+          type="button"
+          onClick={handleDownload}
+          className="btn-pink text-xs sm:text-sm py-1.5 px-3 w-auto whitespace-nowrap inline-block cursor-pointer"
         >
          DOWNLOAD ID
-        </a>
+        </button>
 
-        <a
-          href={xShareUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-pink text-xs sm:text-sm py-1.5 px-3 w-auto whitespace-nowrap inline-block"
+        <button
+          type="button"
+          onClick={handleShare}
+          className="btn-pink text-xs sm:text-sm py-1.5 px-3 w-auto whitespace-nowrap inline-block cursor-pointer"
         >
           SHARE ON X
-        </a>
+        </button>
       </div>
 
       {/* 2. Want Your Own ID Card CTA Section (DOWN/BOTTOM) */}

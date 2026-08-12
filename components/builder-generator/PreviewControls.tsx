@@ -2,6 +2,8 @@
 
 import React from "react";
 import Neo3DButton from "@/components/ui/Neo3DButton";
+import { handleXShare } from "@/lib/share/x";
+import { downloadOrOpenImage } from "@/lib/share/download";
 
 interface PreviewControlsProps {
   viewMode: "3d" | "2d";
@@ -27,6 +29,20 @@ export default function PreviewControls({
   const downloadFileName = `HH-Goa-2026-${(
     generatedResult?.name || "Builder"
   ).replace(/\s+/g, "-")}.png`;
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (generatedResult?.cardUrl) {
+      downloadOrOpenImage(generatedResult.cardUrl, downloadFileName);
+    }
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (generatedResult?.xShareUrl) {
+      handleXShare(generatedResult.xShareUrl, generatedResult.name, e);
+    }
+  };
 
   const handleCopyLink = () => {
     if (!generatedResult?.shareUrl) return;
@@ -82,19 +98,16 @@ export default function PreviewControls({
           {isGenerated ? (
             <>
               <Neo3DButton
-                asAnchor
-                href={generatedResult.cardUrl}
-                download={downloadFileName}
+                type="button"
+                onClick={handleDownload}
                 variant="pink"
                 className="flex-1 text-xs"
               >
                 DOWNLOAD PNG
               </Neo3DButton>
               <Neo3DButton
-                asAnchor
-                href={generatedResult.xShareUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                type="button"
+                onClick={handleShare}
                 variant="outline-pink"
                 className="flex-1 text-xs"
               >

@@ -42,14 +42,14 @@ export default function Neo3DButton({
         download={download}
         target={target}
         rel={rel}
-        className={cn("no-underline block w-full", className)}
+        onClick={onClick as any}
+        className={cn(
+          "custom-btn no-underline flex items-center justify-center text-center w-full cursor-pointer select-none",
+          variantClass,
+          className
+        )}
       >
-        <button
-          type="button"
-          className={cn("custom-btn", variantClass, "w-full")}
-        >
-          {children}
-        </button>
+        {children}
       </a>
     );
   }
