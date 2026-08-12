@@ -17,8 +17,11 @@ const victorMono = Victor_Mono({
   display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "HHG | ID Card Generator",
+  metadataBase: new URL(siteUrl),
+  title: "HH | ID Card Generator",
   description:
     "Generate your official branded HH Goa 2026 Builder Pass, download your ID card PNG, and share on X with #FrameInGoa.",
   keywords: [
@@ -28,11 +31,29 @@ export const metadata: Metadata = {
     "FrameInGoa",
     "Goa Hackathon",
   ],
+  icons: {
+    icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/assets/logo.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
+  },
   openGraph: {
     title: "HH Goa 2026 — Builder ID Card Generator",
     description:
       "Generate your official branded HH Goa 2026 Builder Pass, download your ID card PNG, and share on X with #FrameInGoa.",
     siteName: "HH Goa 2026",
+    url: siteUrl,
+    images: [
+      {
+        url: "/OG.png",
+        width: 1200,
+        height: 630,
+        alt: "HH Goa 2026 — Builder ID Card Generator",
+        type: "image/png",
+      },
+    ],
     type: "website",
   },
   twitter: {
@@ -40,6 +61,7 @@ export const metadata: Metadata = {
     title: "HH Goa 2026 — Builder ID Card Generator",
     description:
       "Generate your official branded HH Goa 2026 Builder Pass, download your ID card PNG, and share on X with #FrameInGoa.",
+    images: ["/OG.png"],
   },
 };
 
