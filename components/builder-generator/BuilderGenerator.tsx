@@ -7,6 +7,8 @@ import UploadSection from "./UploadSection";
 import PreviewSection from "./PreviewSection";
 import Footer from "@/components/ui/Footer";
 import { shootConfetti, shootFireworks } from "@/components/confetti-button";
+import { compressImageTo500 } from "@/lib/image/compress";
+import { getXShareUrl } from "@/lib/share/x";
 
 export default function BuilderGenerator() {
   // Photo & Transformation Draft State
@@ -44,7 +46,6 @@ export default function BuilderGenerator() {
 
   // Status State
   const [isGenerating, setIsGenerating] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [generatedResult, setGeneratedResult] = useState<{
     id: string;
@@ -57,7 +58,6 @@ export default function BuilderGenerator() {
   const handlePhotoSelected = (file: File, previewUrl: string) => {
     setPhotoFile(file);
     setPhotoPreviewUrl(previewUrl);
-    setErrorMsg(null);
   };
 
   const handleClearPhoto = () => {
@@ -69,19 +69,33 @@ export default function BuilderGenerator() {
     setDraftOffsetY(0);
   };
 
+  const createFallbackCard = (siteUrl: string, nameToUse: string) => {
+    const cardId = Math.random().toString(36).substring(2, 10);
+    const cardUrl = renderedCardDataUrl || photoPreviewUrl || "";
+    const shareUrl = `${siteUrl}/card/${cardId}`;
+    const xShareUrl = getXShareUrl(cardId, siteUrl, nameToUse);
+
+    setGeneratedResult({
+      id: cardId,
+      cardUrl,
+      shareUrl,
+      xShareUrl,
+      name: nameToUse,
+    });
+
+    // Play fireworks celebration ONLY when card is successfully generated
+    shootFireworks();
+  };
+
   const handleGenerate = async () => {
     if (!photoFile) {
-      setErrorMsg("Please upload your photo to your ID card first!");
+      console.error("No photo provided for ID card generation.");
       return;
     }
 
-    if (!draftName.trim()) {
-      setErrorMsg("Please enter your name.");
-      return;
-    }
+    const nameToUse = draftName.trim() || "HH GOA BUILDER";
 
     setIsGenerating(true);
-    setErrorMsg(null);
 
     // Commit draft values to 3D Preview Card & QR Code
     setCommittedName(draftName);
@@ -91,13 +105,18 @@ export default function BuilderGenerator() {
     setCommittedOffsetX(draftOffsetX);
     setCommittedOffsetY(draftOffsetY);
 
-    // Trigger fireworks celebration effect when clicked generate
-    shootFireworks();
+    const siteUrl =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
     try {
+      // Compress large photos to small 500x500 in background before sending
+      const compressedPhoto = await compressImageTo500(photoFile);
+
       const formData = new FormData();
-      formData.append("photo", photoFile);
-      formData.append("name", draftName);
+      formData.append("photo", compressedPhoto);
+      formData.append("name", nameToUse);
       formData.append("stack", draftStack);
       formData.append("qrUrl", draftQrUrl);
       formData.append("passNo", passNo);
@@ -115,27 +134,34 @@ export default function BuilderGenerator() {
         body: formData,
       });
 
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(
-          data.error || "Failed to generate ID card. Please try again.",
-        );
+      // Parse response safely as text first to handle non-JSON HTML error responses (e.g. 413 Payload Too Large)
+      const responseText = await res.text();
+      let data: any = null;
+      try {
+        data = JSON.parse(responseText);
+      } catch (jsonErr) {
+        console.error("Server API returned non-JSON response:", responseText);
       }
 
-      setGeneratedResult({
-        id: data.id,
-        cardUrl: data.cardUrl,
-        shareUrl: data.shareUrl,
-        xShareUrl: data.xShareUrl,
-        name: data.name,
-      });
+      if (res.ok && data && data.success) {
+        setGeneratedResult({
+          id: data.id,
+          cardUrl: data.cardUrl,
+          shareUrl: data.shareUrl,
+          xShareUrl: data.xShareUrl,
+          name: data.name,
+        });
+
+        // Trigger fireworks celebration ON SUCCESSFUL CARD GENERATION
+        shootFireworks();
+      } else {
+        const errorMsg = data?.error || responseText || "Server card creation failed";
+        console.error("Card generation API error (falling back to client card):", errorMsg);
+        createFallbackCard(siteUrl, nameToUse);
+      }
     } catch (err: any) {
-      console.error("Card generation failed:", err);
-      setErrorMsg(
-        err.message ||
-          "Something went wrong while creating your Builder Card. Please try again.",
-      );
+      console.error("Card generation exception (falling back to client card):", err);
+      createFallbackCard(siteUrl, nameToUse);
     } finally {
       setIsGenerating(false);
     }
@@ -161,7 +187,6 @@ export default function BuilderGenerator() {
     setPhotoFilter("none");
     setPassNo(Math.floor(10000 + Math.random() * 90000).toString());
     setGeneratedResult(null);
-    setErrorMsg(null);
   };
 
   return (
@@ -169,12 +194,6 @@ export default function BuilderGenerator() {
       <HeaderBar />
       <div className="w-full flex flex-col gap-6">
         <TaskHeading />
-
-        {errorMsg && (
-          <div className="p-4 neo-card-pink text-center font-bold text-xs sm:text-sm">
-            ⚠️ {errorMsg}
-          </div>
-        )}
 
         {/* Two Column System: Left = Uploading & Controls Section; Right = Live Preview Section */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">

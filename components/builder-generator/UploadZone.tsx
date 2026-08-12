@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { convertHeicToJpegIfNeeded } from "@/lib/image/heic";
+import { compressImageTo500 } from "@/lib/image/compress";
 
 interface UploadZoneProps {
   onPhotoSelected: (file: File, previewUrl: string) => void;
@@ -47,18 +48,18 @@ export default function UploadZone({
       name.endsWith(".heif");
 
     if (!isImage) {
-      alert("Please upload a valid image file (JPG, PNG, or HEIC).");
+      console.error("Invalid image file provided:", originalFile.name);
       return;
     }
 
     try {
       setIsConverting(true);
       const processedFile = await convertHeicToJpegIfNeeded(originalFile);
-      const previewUrl = URL.createObjectURL(processedFile);
-      onPhotoSelected(processedFile, previewUrl);
+      const compressedFile = await compressImageTo500(processedFile);
+      const previewUrl = URL.createObjectURL(compressedFile);
+      onPhotoSelected(compressedFile, previewUrl);
     } catch (err) {
       console.error("Image processing error:", err);
-      alert("Could not process this photo. Please try another image.");
     } finally {
       setIsConverting(false);
     }

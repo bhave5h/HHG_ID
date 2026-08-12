@@ -60,7 +60,7 @@ export default function BuilderForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!hasPhoto) {
-      alert("Please upload your photo to your ID card first!");
+      console.error("Please upload a photo before generating your ID card.");
       return;
     }
     onGenerate();
